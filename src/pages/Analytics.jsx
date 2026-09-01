@@ -262,10 +262,9 @@ export default function Analytics() {
           if (match) {
             setLink({
               ...match,
-              // Keep BOTH log sets. Overwriting clickLogs with the active view
-              // destroyed the other set, so neither count could be shown.
-              clickLogs: match.clickLogs || [],
-              preClickLogs: match.preClickLogs || [],
+              clickLogs: isPreClickView
+                ? match.preClickLogs || []
+                : match.clickLogs || [],
               short: `${SHORTENER_DOMAIN}/${match.shortCode}`,
               original: match.originalUrl,
               labels: match.labels || [],
@@ -308,9 +307,9 @@ export default function Analytics() {
       setLink((prev) => ({
         ...prev,
         ...updatedUrl,
-        // Same as the fetch above — keep both sets so both counts stay available.
-        clickLogs: updatedUrl.clickLogs || [],
-        preClickLogs: updatedUrl.preClickLogs || [],
+        clickLogs: isPreClickView
+          ? updatedUrl.preClickLogs || []
+          : updatedUrl.clickLogs || [],
         short: `${SHORTENER_DOMAIN}/${updatedUrl.shortCode}`,
         original: updatedUrl.originalUrl,
         labels: updatedUrl.labels || [],
@@ -361,24 +360,9 @@ export default function Analytics() {
     );
   }
 
-  // Both totals stay available regardless of which view is active.
-  const redirectedLogs = link.clickLogs || [];
-  const nonRedirectedLogs = link.preClickLogs || [];
-  const activeLogs = isPreClickView ? nonRedirectedLogs : redirectedLogs;
-
-  // Prefer the stored counters, same as Dashboard.jsx, falling back to the log
-  // length when the counter is absent (non-owners never receive preClicks).
-  const redirectedCount = link.clicks ?? redirectedLogs.length;
-  const nonRedirectedCount = link.preClicks ?? nonRedirectedLogs.length;
-  const activeTotal = isPreClickView ? nonRedirectedCount : redirectedCount;
-  const otherViewCount = isPreClickView ? redirectedCount : nonRedirectedCount;
-
-  const filteredLogs = activeLogs.filter((log) => {
-    // Compare in LOCAL time. toISOString() keys the log by its UTC date, while
-    // startDate/endDate are built from local date parts — east of UTC that
-    // dropped early-morning clicks on the first day of the range.
+  const filteredLogs = (link.clickLogs || []).filter((log) => {
     const clickedAt = log.clickedAt
-      ? formatDateToString(new Date(log.clickedAt))
+      ? new Date(log.clickedAt).toISOString().slice(0, 10)
       : null;
     if (startDate && clickedAt && clickedAt < startDate) return false;
     if (endDate && clickedAt && clickedAt > endDate) return false;
@@ -396,14 +380,8 @@ export default function Analytics() {
     return true;
   });
 
-  // Parse a YYYY-MM-DD bound as LOCAL midnight. new Date("2026-08-22") parses
-  // as UTC midnight, which lands at 05:00 local in UTC+5 (or on the previous
-  // day west of UTC), shifting the chart's day columns.
   const parseDate = (value) => {
-    if (!value) return null;
-    const [y, m, d] = String(value).split("-").map(Number);
-    if (!y || !m || !d) return null;
-    const date = new Date(y, m - 1, d);
+    const date = new Date(value);
     return Number.isNaN(date.getTime()) ? null : date;
   };
 
@@ -429,10 +407,8 @@ export default function Analytics() {
   filteredLogs.forEach((log) => {
     const clickedAt = log.clickedAt ? new Date(log.clickedAt) : null;
     if (!clickedAt) return;
-    // No range guard here: filteredLogs already applied the date range. The old
-    // guards compared a timestamp against a midnight boundary, so a click on
-    // the first or last day of the range was counted in the totals but missing
-    // from its own column in the chart.
+    if (chartStart && clickedAt < chartStart) return;
+    if (chartEnd && clickedAt > chartEnd) return;
     const dateStr = clickedAt.toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
@@ -754,8 +730,8 @@ export default function Analytics() {
                 <div className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
                   {isPreClickView ? "Redirected Clicks" : "Non-Redirected Clicks"}
                 </div>
-                <div className="text-2xl font-extrabold text-slate-900">
-                  {otherViewCount.toLocaleString()}
+                <div className="text-xs sm:text-sm font-bold text-indigo-600 mt-0.5 sm:mt-1 truncate">
+                  Same Link Analytics
                 </div>
               </div>
             </Link>
@@ -769,7 +745,7 @@ export default function Analytics() {
           <StatPill
             icon={<MousePointerClick size={18} className="text-indigo-600" />}
             label={`Total ${metricLabel}`}
-            value={activeTotal.toLocaleString()}
+            value={filteredLogs.length.toLocaleString()}
           />
           <StatPill
             icon={<Globe size={18} className="text-indigo-600" />}
@@ -846,7 +822,6 @@ export default function Analytics() {
             <h2 className="text-sm sm:text-base font-bold text-slate-900 mb-3 sm:mb-5">
               Top Browsers
             </h2>
-            {referrerData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart
                 data={referrerData}
@@ -895,17 +870,6 @@ export default function Analytics() {
                 />
               </BarChart>
             </ResponsiveContainer>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-[200px] text-center">
-                <Globe size={28} className="text-slate-200 mb-2" />
-                <p className="text-sm text-slate-400 font-medium">
-                  No browser data yet
-                </p>
-                <p className="text-xs text-slate-300 mt-1">
-                  Data will appear once this link records {metricLabel.toLowerCase()}
-                </p>
-              </div>
-            )}
           </Card>
 
           {/* Device pie chart */}
@@ -913,7 +877,6 @@ export default function Analytics() {
             <h2 className="text-sm sm:text-base font-bold text-slate-900 mb-3 sm:mb-5">
               Device Breakdown
             </h2>
-            {finalDeviceData.length > 0 ? (
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <ResponsiveContainer width="100%" height={180} className="max-w-[220px]">
                 <PieChart>
@@ -955,17 +918,6 @@ export default function Analytics() {
                 ))}
               </div>
             </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-[180px] text-center">
-                <Smartphone size={28} className="text-slate-200 mb-2" />
-                <p className="text-sm text-slate-400 font-medium">
-                  No device data yet
-                </p>
-                <p className="text-xs text-slate-300 mt-1">
-                  Device stats appear once this link records {metricLabel.toLowerCase()}
-                </p>
-              </div>
-            )}
           </Card>
         </div>
 
@@ -974,7 +926,6 @@ export default function Analytics() {
           <h2 className="text-sm sm:text-base font-bold text-slate-900 mb-3 sm:mb-4">
             Top Countries
           </h2>
-          {finalGeoData.length > 0 ? (
           <div className="space-y-3">
             {finalGeoData.map((geo, i) => {
               const max = finalGeoData[0].clicks || 1;
@@ -1010,17 +961,6 @@ export default function Analytics() {
               );
             })}
           </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Globe size={28} className="text-slate-200 mb-2" />
-              <p className="text-sm text-slate-400 font-medium">
-                No geographic data yet
-              </p>
-              <p className="text-xs text-slate-300 mt-1">
-                Country stats appear once this link records {metricLabel.toLowerCase()}
-              </p>
-            </div>
-          )}
         </Card>
       </main>
     </div>
