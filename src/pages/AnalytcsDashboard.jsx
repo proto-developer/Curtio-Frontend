@@ -10,6 +10,7 @@ import Sidebar from "../components/Sidebar";
 import Filter from "../components/filter";
 import ShareModal from "../components/LinkShareModal";
 import LabelCell from "../components/LabelCell";
+import { hasUnlimitedLinks, linkLimitFor, isSubscriptionExpired } from "../premiumAccess";
 import AddToCampaignModal from "../components/AddToCampaignModal";
 import { isLinkNew, markLinkAsViewed } from "../lib/newLinkTracker";
 
@@ -66,7 +67,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 function DeleteModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -155,10 +156,12 @@ export default function AnalytcsDashboard() {
 
   const token = localStorage.getItem("apiToken");
 
-  // const isPremium = PREMIUM_USERS.includes(userEmail);
-  // const FREE_LIMIT = isPremium ? Infinity : 1;
-  const isPremium = true;
-  const FREE_LIMIT = Infinity;
+  // Paid plan = a document in the subscriptions collection. Seeded from the JWT
+  // claim, then replaced by the live value GET /urls returns.
+  const [isPremium, setIsPremium] = useState(() => hasUnlimitedLinks());
+  const [subscriptionStatus, setSubscriptionStatus] = useState("none");
+  const subscriptionExpired = isSubscriptionExpired(subscriptionStatus);
+  const FREE_LIMIT = linkLimitFor(isPremium);
 
   // Helper function to format date as YYYY-MM-DD
   const formatDateToString = (date) => {
@@ -310,6 +313,12 @@ export default function AnalytcsDashboard() {
       }
       const data = await res.json();
       if (data.success) {
+        if (typeof data.unlimitedLinks === "boolean") {
+          setIsPremium(data.unlimitedLinks);
+        }
+        if (typeof data.subscriptionStatus === "string") {
+          setSubscriptionStatus(data.subscriptionStatus);
+        }
         const sortedUrls = [...(data.urls || [])].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setRawUrls(sortedUrls);
         if (data.labels) {
@@ -641,6 +650,7 @@ export default function AnalytcsDashboard() {
           linksCount={links.length}
           FREE_LIMIT={FREE_LIMIT}
           isPremium={isPremium}
+          subscriptionExpired={subscriptionExpired}
         />
 
         {/* ── Main Content Area ── */}

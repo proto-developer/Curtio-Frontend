@@ -52,6 +52,14 @@ import Sidebar from "../components/Sidebar";
 import Filter from "../components/filter";
 import ShareModal from "../components/LinkShareModal";
 import LabelCell from "../components/LabelCell";
+import {
+  hasUnlimitedLinks,
+  linkLimitFor,
+  campaignLimitFor,
+  isSubscriptionExpired,
+  FREE_LINK_LIMIT,
+  FREE_CAMPAIGN_LIMIT,
+} from "../premiumAccess";
 import env from "../../Config/env";
 import { isLinkNew, markLinkAsViewed, addNewLinkId } from "../lib/newLinkTracker";
 
@@ -112,7 +120,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 function DeleteModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -177,7 +185,7 @@ function DeleteModal({ onConfirm, onCancel, deleting }) {
 function DeleteCampaignModal({ campaignName, linksCount, onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-800 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -241,7 +249,7 @@ function DeleteCampaignModal({ campaignName, linksCount, onConfirm, onCancel, de
 function RemoveFromCampaignConfirmationModal({ linkShort, campaignName, onConfirm, onCancel, processing }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !processing && onCancel()}
     >
       <div
@@ -282,10 +290,16 @@ function RemoveFromCampaignConfirmationModal({ linkShort, campaignName, onConfir
   );
 }
 
-function LimitModal({ onClose }) {
+/**
+ * `type` picks the copy: "campaign" when the campaign cap was hit, else links.
+ * `expired` switches to win-back wording for a lapsed subscriber.
+ */
+function LimitModal({ onClose, type = "link", expired = false }) {
+  const isCampaign = type === "campaign";
+
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
@@ -293,20 +307,42 @@ function LimitModal({ onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Zap size={22} className="text-indigo-600" fill="currentColor" />
+          {isCampaign ? (
+            <TrendingUp size={22} className="text-indigo-600" />
+          ) : (
+            <Zap size={22} className="text-indigo-600" fill="currentColor" />
+          )}
         </div>
         <h3 className="font-extrabold text-slate-900 text-lg mb-1">
-          Plan Limit Reached
+          {expired
+            ? "Plus Plan Expired"
+            : isCampaign
+              ? "Campaign Limit Reached"
+              : "Link Limit Reached"}
         </h3>
         <p className="text-slate-500 text-sm mb-6">
-          You have reached the maximum number of active links for your current plan. Please upgrade to create more tracked links.
+          {expired
+            ? isCampaign
+              ? `Your Plus plan has expired, so you are back to ${FREE_CAMPAIGN_LIMIT} campaign and ${FREE_LINK_LIMIT} tracked link. Subscribe again to create more campaigns.`
+              : `Your Plus plan has expired, so you are back to ${FREE_LINK_LIMIT} tracked link. Subscribe again to create more links.`
+            : isCampaign
+              ? `Free includes ${FREE_CAMPAIGN_LIMIT} campaign and ${FREE_LINK_LIMIT} tracked link, and a new campaign needs a link. Upgrade to Plus for unlimited campaigns and links.`
+              : `Free includes ${FREE_LINK_LIMIT} tracked link. Upgrade to Plus to create unlimited tracked links.`}
         </p>
-        <button
-          onClick={onClose}
-          className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors cursor-pointer"
-        >
-          Understood
-        </button>
+        <div className="flex flex-col gap-2">
+          <Link
+            to="/pricing"
+            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors text-center"
+          >
+            {expired ? "Subscribe Again" : "View Plans"}
+          </Link>
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-colors cursor-pointer"
+          >
+            Not now
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -339,10 +375,12 @@ export default function Campaigns() {
 
   const token = localStorage.getItem("apiToken");
 
-  // const isPremium = PREMIUM_USERS.includes(userEmail);
-  // const FREE_LIMIT = isPremium ? Infinity : 1;
-  const isPremium = true;
-  const FREE_LIMIT = Infinity;
+  // Paid plan = a document in the subscriptions collection. Seeded from the JWT
+  // claim, then replaced by the live value GET /urls returns.
+  const [isPremium, setIsPremium] = useState(() => hasUnlimitedLinks());
+  const [subscriptionStatus, setSubscriptionStatus] = useState("none");
+  const subscriptionExpired = isSubscriptionExpired(subscriptionStatus);
+  const FREE_LIMIT = linkLimitFor(isPremium);
 
   // Helper function to format date as YYYY-MM-DD
   const formatDateToString = (date) => {
@@ -380,6 +418,8 @@ export default function Campaigns() {
   const [removeLinkFromCampaignModal, setRemoveLinkFromCampaignModal] = useState(null); // { linkObj, campaignName }
   const [removingFromCampaign, setRemovingFromCampaign] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);
+  // Which cap was hit — drives the modal copy ("link" or "campaign").
+  const [limitModalType, setLimitModalType] = useState("link");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [startDate, setStartDate] = useState(defaultStartDate);
@@ -522,6 +562,12 @@ export default function Campaigns() {
       }
       const data = await res.json();
       if (data.success) {
+        if (typeof data.unlimitedLinks === "boolean") {
+          setIsPremium(data.unlimitedLinks);
+        }
+        if (typeof data.subscriptionStatus === "string") {
+          setSubscriptionStatus(data.subscriptionStatus);
+        }
         if (data.labels) {
           setAccountLabels(data.labels);
         }
@@ -664,6 +710,9 @@ export default function Campaigns() {
     (a, b) => b.clicks - a.clicks,
   );
   const totalCampaigns = campaignsList.length;
+  // Campaign quota is separate from the link quota: Free holds 1 of each.
+  const CAMPAIGN_LIMIT = campaignLimitFor(isPremium);
+  const atCampaignLimit = !isPremium && totalCampaigns >= CAMPAIGN_LIMIT;
   const totalCampaignClicks = campaignsList.reduce(
     (sum, c) => sum + c.clicks,
     0,
@@ -1092,6 +1141,13 @@ export default function Campaigns() {
           if (!selectedCampaign) {
             setSelectedCampaign(activeCampaign.trim());
           }
+        } else if (data.planLimitReached) {
+          // The server refused on quota. On this page the user was creating a
+          // campaign, so show the campaign modal rather than the API's
+          // link-worded message.
+          setShowCreateForm(false);
+          setLimitModalType(selectedCampaign ? "link" : "campaign");
+          setShowLimitModal(true);
         } else {
           setError(data.message || "Failed to create short URL.");
         }
@@ -1143,7 +1199,13 @@ export default function Campaigns() {
           processing={removingFromCampaign}
         />
       )}
-      {showLimitModal && <LimitModal onClose={() => setShowLimitModal(false)} />}
+      {showLimitModal && (
+        <LimitModal
+          type={limitModalType}
+          expired={subscriptionExpired}
+          onClose={() => setShowLimitModal(false)}
+        />
+      )}
 
       <div className="flex min-h-screen">
         <Sidebar
@@ -1152,6 +1214,7 @@ export default function Campaigns() {
           linksCount={links.length}
           FREE_LIMIT={FREE_LIMIT}
           isPremium={isPremium}
+          subscriptionExpired={subscriptionExpired}
         />
 
         {/* ── Main Content ── */}
@@ -1193,11 +1256,27 @@ export default function Campaigns() {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => {
-                  if (atLimit) {
+                  // Same button is "New Link" inside a campaign and
+                  // "New Campaign" outside one — check the matching quota so
+                  // the modal explains the right limit.
+                  if (selectedCampaign) {
+                    if (atLimit) {
+                      setLimitModalType("link");
+                      setShowLimitModal(true);
+                      return;
+                    }
+                  } else if (atCampaignLimit) {
+                    // Only the CAMPAIGN cap blocks opening this form. The link
+                    // cap must not: a campaign can be built from an existing
+                    // link (a PATCH, no new link), so a Free user with their 1
+                    // link and no campaigns can still create their 1 campaign.
+                    // If they pick "new link" while at the link cap, the server
+                    // says so and the submit handler shows the link modal.
+                    setLimitModalType("campaign");
                     setShowLimitModal(true);
-                  } else {
-                    setShowCreateForm(!showCreateForm);
+                    return;
                   }
+                  setShowCreateForm(!showCreateForm);
                 }}
                 className="flex items-center gap-2 font-semibold text-sm px-3 sm:px-4 py-2.5 rounded-xl transition-colors shadow-sm bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 cursor-pointer"
               >

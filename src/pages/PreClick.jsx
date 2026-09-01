@@ -60,7 +60,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 function DeleteModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -149,8 +149,9 @@ export default function PreClick() {
 
   const token = localStorage.getItem("apiToken");
 
-  // const isPremium = PREMIUM_USERS.includes(userEmail);
-  // const FREE_LIMIT = isPremium ? Infinity : 1;
+  // This page is owner-only (wrapped in OwnerRoute). Owners are unlimited
+  // without a subscription, so there is no plan/quota logic here at all —
+  // pre-click analytics and subscriptions are unrelated.
   const isPremium = true;
   const FREE_LIMIT = Infinity;
 
