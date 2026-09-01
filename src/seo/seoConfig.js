@@ -25,6 +25,31 @@ export const ROUTE_SEO = {
     description:
       "Short links, custom slugs, QR codes, campaigns and click analytics in plain terms. No bloat, no upsell maze — here is the full list of what Curtio does.",
   },
+  "/pricing": {
+    title: "Pricing — free for 1 link, $10/mo for unlimited | Curtio",
+    description:
+      "Free includes 1 link per user with QR codes, click analytics, custom aliases, UTM tags and 1 campaign. Plus is $10 a month, or $96 a year, for unlimited links and campaigns.",
+  },
+  "/terms-of-service": {
+    title: "Terms of Service | Curtio",
+    description:
+      "The terms governing your access to and use of Curtio's URL shortening, analytics, and related tools, including accounts, acceptable use, plans and billing.",
+  },
+  "/privacy-policy": {
+    title: "Privacy Policy | Curtio",
+    description:
+      "What Curtio collects when you use curtio.io and redirect.curtio.io links, why we collect it, how we share and retain it, and the control you have over your data.",
+  },
+  "/refund-policy": {
+    title: "Refund & Return Policy | Curtio",
+    description:
+      "How refunds, cancellation, and billing issues work for paid Curtio subscriptions, and how to reach us about a charge you believe was made in error.",
+  },
+  "/shipping-policy": {
+    title: "Shipping & Service Policy | Curtio",
+    description:
+      "Curtio is a digital SaaS platform with no physical products to ship. How and when access to free and paid features is delivered electronically.",
+  },
   "/accuracy": {
     title: "Click accuracy — we count clicks the honest way | Curtio",
     description:
@@ -44,6 +69,11 @@ export const ROUTE_SEO = {
     title: "Create your free Curtio account",
     description:
       "Create a free Curtio account. Free forever, no credit card needed — one tracked link with full click analytics.",
+  },
+  "/password/:shortCode": {
+    title: "Protected link | Curtio",
+    description: "This Curtio link is password protected. Enter the password to continue.",
+    noindex: true,
   },
   "/forgot-password": {
     title: "Reset your password | Curtio",

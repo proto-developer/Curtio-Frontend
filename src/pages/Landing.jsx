@@ -35,7 +35,7 @@ const STATS = [
   { value: '2.4B+', label: 'Links shortened' },
   { value: '180+', label: 'Countries served' },
   { value: '99.9%', label: 'Uptime SLA' },
-  { value: '<50ms', label: 'Redirect speed' },
+  { value: '<1000ms', label: 'Redirect speed' },
 ]
 
 const FREE_FEATURES = [
