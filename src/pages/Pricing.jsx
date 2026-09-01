@@ -211,8 +211,8 @@ export default function Pricing() {
           <div className="max-w-[1152px] mx-auto px-6">
             <div className="grid md:grid-cols-2 gap-6 items-stretch max-w-[1080px] mx-auto">
 
-              {/* Free */}
-              <article className="bg-white border border-slate-200 rounded-[16px] p-8 shadow-[0_1px_3px_rgba(0,0,0,.07)] flex flex-col transition-all hover:shadow-[0_16px_38px_-10px_rgba(15,23,42,.20)] hover:-translate-y-1">
+              {/* Free — the prominent card: it is the plan you can actually buy today. */}
+              <article className="relative bg-white border-2 border-indigo-500 rounded-[16px] p-8 shadow-[0_24px_60px_-18px_rgba(79,70,229,0.4)] flex flex-col transition-all hover:shadow-[0_32px_70px_-18px_rgba(79,70,229,0.45)] hover:-translate-y-1">
                 <h2 className="font-bold text-[1.2rem] text-slate-900 tracking-[-0.01em]">Free</h2>
 
                 <div className="flex items-baseline gap-1.5 mt-5 mb-4 flex-wrap">
@@ -242,8 +242,8 @@ export default function Pricing() {
                 </Link>
               </article>
 
-              {/* Plus */}
-              <article className="relative bg-white border-2 border-indigo-500 rounded-[16px] p-8 shadow-[0_24px_60px_-18px_rgba(79,70,229,0.4)] flex flex-col transition-all hover:shadow-[0_32px_70px_-18px_rgba(79,70,229,0.45)] hover:-translate-y-1">
+              {/* Plus — deliberately understated while checkout is unavailable. */}
+              <article className="relative bg-white border border-slate-200 rounded-[16px] p-8 shadow-[0_1px_3px_rgba(0,0,0,.07)] flex flex-col transition-all hover:shadow-[0_16px_38px_-10px_rgba(15,23,42,.20)]">
                 <div className="flex items-center justify-between gap-3">
                   <h2 className="font-bold text-[1.2rem] text-slate-900 tracking-[-0.01em]">Plus</h2>
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap bg-amber-50 text-amber-700 text-[0.72rem] font-bold tracking-[0.02em] px-3 py-[5px] rounded-full">
