@@ -37,6 +37,12 @@ import { FaWhatsapp } from "react-icons/fa6";
 import ShareModal from "../components/LinkShareModal";
 import LabelCell from "../components/LabelCell";
 import { isOwner } from "../ownerAccess";
+import {
+  hasUnlimitedLinks,
+  linkLimitFor,
+  isSubscriptionExpired,
+  FREE_LINK_LIMIT,
+} from "../premiumAccess";
 import AddToCampaignModal from "../components/AddToCampaignModal";
 import useSocket from "../socket/useSocket";
 import env from "../../Config/env";
@@ -68,7 +74,7 @@ function StatCard({ icon, label, value, sub, className = "" }) {
 function DeleteModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -115,10 +121,11 @@ function DeleteModal({ onConfirm, onCancel, deleting }) {
   );
 }
 
-function LimitModal({ onClose }) {
+/** `expired` swaps the copy for someone whose subscription has lapsed. */
+function LimitModal({ onClose, expired = false }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
@@ -129,17 +136,27 @@ function LimitModal({ onClose }) {
           <Zap size={22} className="text-indigo-600" fill="currentColor" />
         </div>
         <h3 className="font-extrabold text-slate-900 text-lg mb-1">
-          Plan Limit Reached
+          {expired ? "Plus Plan Expired" : "Link Limit Reached"}
         </h3>
         <p className="text-slate-500 text-sm mb-6">
-          You have reached the maximum number of active links for your current plan. Please upgrade to create more tracked links.
+          {expired
+            ? `Your Plus plan has expired, so you are back to ${FREE_LINK_LIMIT} tracked link. Subscribe again to create more links.`
+            : `Free includes ${FREE_LINK_LIMIT} tracked link. Upgrade to Plus to create unlimited tracked links.`}
         </p>
-        <button
-          onClick={onClose}
-          className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors cursor-pointer"
-        >
-          Understood
-        </button>
+        <div className="flex flex-col gap-2">
+          <Link
+            to="/pricing"
+            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors text-center"
+          >
+            {expired ? "Subscribe Again" : "View Plans"}
+          </Link>
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-colors cursor-pointer"
+          >
+            Not now
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -209,10 +226,14 @@ export default function Dashboard() {
   const inactiveLinks = links.length - activeLinks;
   const canViewPreClicks = isOwner();
 
-  // const isPremium = PREMIUM_USERS.includes(userEmail);
-  // const FREE_LIMIT = isPremium ? Infinity : 1;
-  const isPremium = true;
-  const FREE_LIMIT = Infinity;
+  // Paid plan = a document in the subscriptions collection. Seeded from the JWT
+  // claim for the first render, then replaced by the live value that GET /urls
+  // returns, so adding a subscription takes effect without a re-login.
+  const [isPremium, setIsPremium] = useState(() => hasUnlimitedLinks());
+  // "none" until GET /urls says otherwise. Drives the expired-subscription copy.
+  const [subscriptionStatus, setSubscriptionStatus] = useState("none");
+  const subscriptionExpired = isSubscriptionExpired(subscriptionStatus);
+  const FREE_LIMIT = linkLimitFor(isPremium);
   const atLimit = !isPremium && links.length >= FREE_LIMIT;
 
   const calculateReturningUsers = () => {
@@ -306,6 +327,14 @@ export default function Dashboard() {
       }
       const data = await res.json();
       if (data.success) {
+        // Live plan flag from the subscriptions collection — overrides the
+        // token snapshot so a new subscription applies without a re-login.
+        if (typeof data.unlimitedLinks === "boolean") {
+          setIsPremium(data.unlimitedLinks);
+        }
+        if (typeof data.subscriptionStatus === "string") {
+          setSubscriptionStatus(data.subscriptionStatus);
+        }
         if (data.labels) {
           setAccountLabels(data.labels);
         }
@@ -442,6 +471,10 @@ export default function Dashboard() {
         setUtmCampaign("");
         setShowAdvanced(false);
         setShowForm(false);
+      } else if (data.planLimitReached) {
+        // Server refused on quota — show the link modal instead of a raw error.
+        setShowForm(false);
+        setShowLimitModal(true);
       } else {
         setError(data.message || "Failed to create short URL.");
       }
@@ -477,7 +510,9 @@ export default function Dashboard() {
           deleting={deleting}
         />
       )}
-      {showLimitModal && <LimitModal onClose={() => setShowLimitModal(false)} />}
+      {showLimitModal && (
+        <LimitModal expired={subscriptionExpired} onClose={() => setShowLimitModal(false)} />
+      )}
       {campaignModalLink && (
         <AddToCampaignModal
           link={campaignModalLink}
@@ -510,7 +545,7 @@ export default function Dashboard() {
       )}
 
       <div className="flex min-h-screen">
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} linksCount={links.length} FREE_LIMIT={FREE_LIMIT} isPremium={isPremium} />
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} linksCount={links.length} FREE_LIMIT={FREE_LIMIT} isPremium={isPremium} subscriptionExpired={subscriptionExpired} />
 
         {/* ── Main ── */}
         <main className="flex-1 min-w-0 md:ml-60 lg:ml-80 px-4 sm:px-6 md:px-8 py-6 md:py-8">
@@ -1015,7 +1050,9 @@ export default function Dashboard() {
           <div className="mt-4 flex items-start gap-2 text-xs text-slate-400">
             <Info size={13} className="shrink-0 mt-0.5" />
             <span>
-              Free plan: up to {FREE_LIMIT} tracked links.
+              {isPremium
+                ? "Paid plan: unlimited tracked links."
+                : `Free plan: ${FREE_LIMIT} tracked link. Upgrade to Plus for unlimited.`}
             </span>
           </div>
         </main>
