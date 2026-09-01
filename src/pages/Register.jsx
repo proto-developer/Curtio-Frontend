@@ -335,25 +335,9 @@ export default function Register() {
                   />
                   <label htmlFor="agree" className="text-sm text-slate-600 leading-snug">
                     I agree to the{' '}
-                    <Link
-                      to="/terms-of-service"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={e => e.stopPropagation()}
-                      className="text-indigo-600 font-medium cursor-pointer hover:underline"
-                    >
-                      Terms of Service
-                    </Link>
+                    <span className="text-indigo-600 font-medium cursor-pointer hover:underline">Terms of Service</span>
                     {' '}and{' '}
-                    <Link
-                      to="/privacy-policy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={e => e.stopPropagation()}
-                      className="text-indigo-600 font-medium cursor-pointer hover:underline"
-                    >
-                      Privacy Policy
-                    </Link>
+                    <span className="text-indigo-600 font-medium cursor-pointer hover:underline">Privacy Policy</span>
                   </label>
                 </div>
 

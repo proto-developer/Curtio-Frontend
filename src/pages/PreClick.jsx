@@ -60,7 +60,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 function DeleteModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -149,9 +149,8 @@ export default function PreClick() {
 
   const token = localStorage.getItem("apiToken");
 
-  // This page is owner-only (wrapped in OwnerRoute). Owners are unlimited
-  // without a subscription, so there is no plan/quota logic here at all —
-  // pre-click analytics and subscriptions are unrelated.
+  // const isPremium = PREMIUM_USERS.includes(userEmail);
+  // const FREE_LIMIT = isPremium ? Infinity : 1;
   const isPremium = true;
   const FREE_LIMIT = Infinity;
 
@@ -442,9 +441,10 @@ export default function PreClick() {
   });
 
   const totalUrls = links.length;
-  // Exact stored counter, same as Dashboard.jsx. This page reports
-  // non-redirected clicks only — redirected clicks live on /dashboard/analytics.
-  const totalPreClicks = links.reduce((sum, l) => sum + (l.preClicks || 0), 0);
+  const hasActiveFilters = Boolean(startDate || endDate || selectedDevice || selectedCountry || selectedSource);
+  const totalPreClicks = hasActiveFilters
+    ? allFilteredLogs.length
+    : Math.max(allFilteredLogs.length, links.reduce((sum, l) => sum + (l.preClicks || 0), 0));
   const activeLinks = links.filter((l) => l.active).length;
   const inactiveLinks = totalUrls - activeLinks;
 
@@ -741,7 +741,7 @@ export default function PreClick() {
             </Link>
             <StatCard
               icon={<MousePointerClick size={18} className="text-orange-500" />}
-              label="Non-Redirected Clicks"
+              label="Total Non-Redirect Clicks"
               value={totalPreClicks.toLocaleString()}
               sub="All time traffic"
             />
