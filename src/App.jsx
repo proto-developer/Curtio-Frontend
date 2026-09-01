@@ -14,6 +14,12 @@ import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/Fpassword";
 import Accuracy from "./pages/Accuracy";
 import Features from "./pages/feature";
+import Pricing from "./pages/Pricing";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import RefundPolicy from "./pages/RefundPolicy";
+import ShippingPolicy from "./pages/ShippingPolicy";
+import PasswordProtected from "./pages/PasswordProtected";
 import PreClick from "./pages/PreClick";
 import OwnerRoute from "./components/OwnerRoute";
 import SocketProvider from "./socket/SocketProvider";
@@ -45,7 +51,12 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/features" element={<Features />} />
         <Route path="/accuracy" element={<Accuracy />} />
-        {/* <Route path="/pricing" element={<Pricing />} /> */}
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/password/:shortCode" element={<PasswordProtected />} />
 
         {/* ── Authenticated App Shell with Single Socket Connection ── */}
         <Route

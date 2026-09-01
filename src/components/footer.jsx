@@ -61,11 +61,23 @@ const Footer = () => {
 
             <div className="space-y-2">
               <Link to="/privacy-policy" className="block text-slate-700 transition hover:text-indigo-600">
-                Privacy
+                Privacy Policy
               </Link>
 
               <Link to="/terms-of-service" className="block text-slate-700 transition hover:text-indigo-600">
-                Terms
+                Terms of Service
+              </Link>
+
+              <Link to="/refund-policy" className="block text-slate-700 transition hover:text-indigo-600">
+                Refund &amp; Return Policy
+              </Link>
+
+              <Link to="/shipping-policy" className="block text-slate-700 transition hover:text-indigo-600">
+                Shipping &amp; Service Policy
+              </Link>
+
+              <Link to="/pricing" className="block text-slate-700 transition hover:text-indigo-600">
+                Pricing Plan
               </Link>
             </div>
           </div>
