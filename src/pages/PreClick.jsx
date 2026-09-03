@@ -9,6 +9,7 @@ import Filter from "../components/filter";
 import ShareModal from "../components/LinkShareModal";
 import LabelCell from "../components/LabelCell";
 import AddToCampaignModal from "../components/AddToCampaignModal";
+import MobileLinkList from "../components/MobileLinkList";
 const FREE_LIMIT = 100;
 import { FaWhatsapp } from "react-icons/fa6";
 import env from "../../Config/env";
@@ -634,40 +635,36 @@ export default function PreClick() {
         />
 
         {/* ── Main Content Area ── */}
-        <main className="flex-1 min-w-0 md:ml-60 lg:ml-80 px-2 sm:px-4 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8 space-y-4 md:space-y-6">
+        <main className="flex-1 min-w-0 lg:ml-72 xl:ml-80 px-2 sm:px-4 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8 space-y-4 md:space-y-6">
           {/* Top Header */}
-          <main className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center justify-between gap-3">
-                <button
-                  className="md:hidden p-2 rounded-xl border border-slate-200 bg-white shadow-sm text-slate-600 hover:bg-slate-50 shrink-0"
-                  onClick={() => setSidebarOpen(true)}
-                >
-                  <Menu size={18} />
-                </button>
+          <header className="flex items-start gap-2 md:gap-3">
+            <button
+              className="lg:hidden shrink-0 p-2 rounded-xl border border-slate-200 bg-white shadow-sm text-slate-600 hover:bg-slate-50"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={18} />
+            </button>
 
-                <div className="min-w-0">
-                  <h1 className="text-sm xl:text-xl md:text-2xl font-extrabold text-slate-900 truncate">
-                    Non-Redirected Analytics
-                  </h1>
-                  <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
-                    See Non-Redirected traffic on Links.
-                  </p>
-                </div>
-              </div>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900">
+                Non-Redirected Analytics
+              </h1>
+              <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
+                See Non-Redirected traffic on Links.
+              </p>
             </div>
-            <div>
-              <button
-                onClick={() => setFilterOpen(!filterOpen)}
-                className={`px-3 py-2 border rounded-xl shadow-sm cursor-pointer flex items-center gap-2 transition-colors ${filterOpen ? "bg-indigo-50 border-indigo-200 text-indigo-600" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"}`}
-              >
-                <Funnel size={18} />
-                <span className="text-sm font-medium hidden sm:inline">
-                  Filters
-                </span>
-              </button>
-            </div>
-          </main>
+          </header>
+
+          {/* Filters row */}
+          <div className="flex justify-end -mt-2">
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              className={`px-3.5 py-2.5 border rounded-xl shadow-sm cursor-pointer flex items-center gap-2 transition-colors ${filterOpen ? "bg-indigo-50 border-indigo-200 text-indigo-600" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+            >
+              <Funnel size={18} />
+              <span className="text-sm font-medium">Filters</span>
+            </button>
+          </div>
 
           {/* Filters Card */}
           {filterOpen && (
@@ -730,11 +727,11 @@ export default function PreClick() {
           )}
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 xl:gap-4">
-            <Link to="/dashboard">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <Link to="/dashboard" className="block">
               <StatCard
                 icon={<LinkIcon size={18} className="text-indigo-600" />}
-                label="Total Links "
+                label="Total Links"
                 value={totalUrls.toLocaleString()}
                 sub="Created URLs"
               />
@@ -745,24 +742,26 @@ export default function PreClick() {
               value={totalPreClicks.toLocaleString()}
               sub="All time traffic"
             />
-            <Link to="/dashboard" state={{ filter: "Active" }}><StatCard
-              icon={<Activity size={18} className="text-green-500" />}
-              label="Active Links"
-              value={activeLinks.toLocaleString()}
-              sub="Currently redirecting"
-            />
+            <Link to="/dashboard" state={{ filter: "Active" }} className="block">
+              <StatCard
+                icon={<Activity size={18} className="text-green-500" />}
+                label="Active Links"
+                value={activeLinks.toLocaleString()}
+                sub="Currently redirecting"
+              />
             </Link>
-            <Link to="/dashboard" state={{ filter: "Inactive" }}><StatCard
-              icon={<ToggleLeft size={18} className="text-slate-400" />}
-              label="Inactive Links"
-              value={inactiveLinks.toLocaleString()}
-              sub="Disabled links"
-            />
+            <Link to="/dashboard" state={{ filter: "Inactive" }} className="block">
+              <StatCard
+                icon={<ToggleLeft size={18} className="text-slate-400" />}
+                label="Inactive Links"
+                value={inactiveLinks.toLocaleString()}
+                sub="Disabled links"
+              />
             </Link>
           </div>
 
           {/* Pre-clicks Over Time Aggregated Chart */}
-          <Card className="p-3 md:p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
               <div>
                 <h2 className="text-sm md:text-base font-bold text-slate-900">
@@ -824,7 +823,7 @@ export default function PreClick() {
           {/* Referrers + Devices Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-6">
             {/* Referrer Breakdown */}
-            <Card className="p-2 md:p-6">
+            <Card className="p-4 sm:p-6">
               <h2 className="text-sm md:text-base font-bold text-slate-900 mb-3">
                 Browser Breakdown
               </h2>
@@ -896,7 +895,7 @@ export default function PreClick() {
             </Card>
 
             {/* Device Breakdown */}
-            <Card className="p-2 md:p-6">
+            <Card className="p-4 sm:p-6">
               <h2 className="text-sm md:text-base font-bold text-slate-900 mb-1">
                 Device Breakdown
               </h2>
@@ -962,9 +961,9 @@ export default function PreClick() {
           </div>
 
           {/* Geographic Breakdown & Top Links Row */}
-          <div className="grid lg:grid-cols-3 gap-2 md:gap-6">
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Country Share */}
-            <Card className="p-3 xl:p-6 lg:col-span-1">
+            <Card className="p-4 sm:p-6 lg:col-span-1">
               <h2 className="text-sm md:text-base font-bold text-slate-900 mb-1">
                 Geographic Share
               </h2>
@@ -1029,7 +1028,7 @@ export default function PreClick() {
             </Card>
 
             {/* Top Performing Links */}
-            <Card className="p-3 xl:p-6 lg:col-span-2 overflow-hidden min-w-0">
+            <Card className="p-4 sm:p-6 lg:col-span-2 overflow-hidden min-w-0">
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-sm md:text-base font-bold text-slate-900">
                   Top Performing Links
@@ -1042,7 +1041,28 @@ export default function PreClick() {
                 Your most popular shortened URLs and their settings
               </p>
 
-              <div className="overflow-x-auto">
+              {/* ── Mobile & tablet: compact list + detail sheet, no horizontal scroll ── */}
+              <MobileLinkList
+                className="lg:hidden"
+                links={topLinks}
+                accountLabels={accountLabels}
+                copiedId={copied}
+                onCopy={handleCopy}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+                onShare={setShareLink}
+                onQr={setQrLink}
+                onAddToCampaign={setCampaignModalLink}
+                onLabelsChanged={fetchUrls}
+                refresh={() => setLinks((prev) => [...prev])}
+                clicksKey="preClicks"
+                clicksLabel="pre-clicks"
+                analyticsPath={(id) => `/analytics/${id}?view=preclick`}
+                emptyText="No links created yet."
+              />
+
+              {/* ── Desktop: full table ── */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table
                   className="w-full text-left border-collapse"
                   style={{ minWidth: "700px" }}

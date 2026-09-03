@@ -12,6 +12,7 @@ import ShareModal from "../components/LinkShareModal";
 import LabelCell from "../components/LabelCell";
 import { hasUnlimitedLinks, linkLimitFor, isSubscriptionExpired } from "../premiumAccess";
 import AddToCampaignModal from "../components/AddToCampaignModal";
+import MobileLinkList from "../components/MobileLinkList";
 import { isLinkNew, markLinkAsViewed } from "../lib/newLinkTracker";
 
 const FREE_LIMIT = 100;
@@ -654,41 +655,36 @@ export default function AnalytcsDashboard() {
         />
 
         {/* ── Main Content Area ── */}
-        <main className="flex-1 min-w-0 md:ml-60 lg:ml-80 px-1.5 sm:px-6 md:px-8 py-6 md:py-8 space-y-6">
+        <main className="flex-1 min-w-0 lg:ml-72 xl:ml-80 px-4 sm:px-6 md:px-8 py-6 md:py-8 space-y-6">
           {/* Top Header */}
-          <main className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center justify-between gap-1 md:gap-3">
-                <button
-                  className="md:hidden p-2 rounded-xl border border-slate-200 bg-white shadow-sm text-slate-600 hover:bg-slate-50 shrink-0"
-                  onClick={() => setSidebarOpen(true)}
-                >
-                  <Menu size={18} />
-                </button>
+          <header className="flex items-start gap-2 md:gap-3">
+            <button
+              className="lg:hidden shrink-0 p-2 rounded-xl border border-slate-200 bg-white shadow-sm text-slate-600 hover:bg-slate-50"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={18} />
+            </button>
 
-                <div className="min-w-0">
-                  <h1 className="text-sm md:text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 truncate">
-                    Redirected Link Dashboard
-                  </h1>
-                  <p className="text-slate-500 text-xs text-xs mt-0.5">
-                    Understand user engagement and link performance globally.
-                  </p>
-                </div>
-              </div>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900">
+                Redirected Link Dashboard
+              </h1>
+              <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
+                Understand user engagement and link performance globally.
+              </p>
             </div>
-            <div className="flex items-center gap-2">
+          </header>
 
-              <button
-                onClick={() => setFilterOpen(!filterOpen)}
-                className={`px-3 py-2 border rounded-xl shadow-sm cursor-pointer flex items-center gap-2 transition-colors ${filterOpen ? "bg-indigo-50 border-indigo-200 text-indigo-600" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"}`}
-              >
-                <Funnel size={18} />
-                <span className="text-sm font-medium hidden sm:inline">
-                  Filters
-                </span>
-              </button>
-            </div>
-          </main>
+          {/* Filters row */}
+          <div className="flex justify-end -mt-2">
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              className={`px-3.5 py-2.5 border rounded-xl shadow-sm cursor-pointer flex items-center gap-2 transition-colors ${filterOpen ? "bg-indigo-50 border-indigo-200 text-indigo-600" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+            >
+              <Funnel size={18} />
+              <span className="text-sm font-medium">Filters</span>
+            </button>
+          </div>
 
           {/* Filters Card */}
           {filterOpen && (
@@ -751,8 +747,8 @@ export default function AnalytcsDashboard() {
           )}
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-            <Link to="/dashboard">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <Link to="/dashboard" className="block">
               <StatCard
                 icon={<LinkIcon size={18} className="text-indigo-600" />}
                 label="Total Links"
@@ -767,24 +763,26 @@ export default function AnalytcsDashboard() {
               value={totalClicks.toLocaleString()}
               sub="All time traffic"
             />
-            <Link to="/dashboard" state={{ filter: "Active" }}><StatCard
-              icon={<Activity size={18} className="text-green-500" />}
-              label="Active Links"
-              value={activeLinks.toLocaleString()}
-              sub="Currently redirecting"
-            />
+            <Link to="/dashboard" state={{ filter: "Active" }} className="block">
+              <StatCard
+                icon={<Activity size={18} className="text-green-500" />}
+                label="Active Links"
+                value={activeLinks.toLocaleString()}
+                sub="Currently redirecting"
+              />
             </Link>
-            <Link to="/dashboard" state={{ filter: "Inactive" }}><StatCard
-              icon={<ToggleLeft size={18} className="text-slate-400" />}
-              label="Inactive Links"
-              value={inactiveLinks.toLocaleString()}
-              sub="Disabled links"
-            />
+            <Link to="/dashboard" state={{ filter: "Inactive" }} className="block">
+              <StatCard
+                icon={<ToggleLeft size={18} className="text-slate-400" />}
+                label="Inactive Links"
+                value={inactiveLinks.toLocaleString()}
+                sub="Disabled links"
+              />
             </Link>
           </div>
 
           {/* Clicks Over Time Aggregated Chart */}
-          <Card className="p-3 sm:p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 xl:mb-5 mb-2">
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-slate-900">
@@ -1052,11 +1050,11 @@ export default function AnalytcsDashboard() {
 
             {/* Top Performing Links */}
             <Card className="p-4 sm:p-6 lg:col-span-2 overflow-hidden min-w-0">
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-base font-bold text-slate-900">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <h2 className="text-sm sm:text-base font-bold text-slate-900">
                   Top Performing Links
                 </h2>
-                <div className="text-xs font-medium text-slate-400">
+                <div className="text-xs font-medium text-slate-400 shrink-0">
                   Sorted by clicks
                 </div>
               </div>
@@ -1064,7 +1062,25 @@ export default function AnalytcsDashboard() {
                 Your most popular shortened URLs and their settings
               </p>
 
-              <div className="overflow-x-auto">
+              {/* ── Mobile & tablet: compact list + detail sheet, no horizontal scroll ── */}
+              <MobileLinkList
+                className="lg:hidden"
+                links={topLinks}
+                accountLabels={accountLabels}
+                copiedId={copied}
+                onCopy={handleCopy}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+                onShare={setShareLink}
+                onQr={setQrLink}
+                onAddToCampaign={setCampaignModalLink}
+                onLabelsChanged={fetchUrls}
+                refresh={() => setLinks((prev) => [...prev])}
+                emptyText="No links created yet."
+              />
+
+              {/* ── Desktop: full table ── */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table
                   className="w-full text-left border-collapse"
                   style={{ minWidth: "700px" }}

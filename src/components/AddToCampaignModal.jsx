@@ -223,24 +223,24 @@ export default function AddToCampaignModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
       onClick={() => !saving && onClose()}
     >
       <div
-        className="bg-white rounded-2xl p-6 sm:p-7 max-w-md w-full shadow-2xl"
+        className="bg-white rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
+        <div className="flex items-start justify-between gap-2 mb-5">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
               <Target size={20} className="text-indigo-600" />
             </div>
-            <div>
+            <div className="min-w-0">
               <h3 className="font-extrabold text-slate-900 text-base">
                 Add to Campaign
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5 max-w-[260px] truncate">
+              <p className="text-xs text-slate-400 mt-0.5 truncate">
                 {link.short}
               </p>
             </div>
@@ -248,7 +248,7 @@ export default function AddToCampaignModal({
           <button
             onClick={onClose}
             disabled={saving}
-            className="p-1.5 rounded-lg cursor-pointer hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors disabled:opacity-50"
+            className="shrink-0 p-1.5 rounded-lg cursor-pointer hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors disabled:opacity-50"
           >
             <X size={18} />
           </button>
@@ -287,7 +287,7 @@ export default function AddToCampaignModal({
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
                   Existing Campaigns
                 </p>
-                <div className="max-h-[300px] overflow-y-auto space-y-1.5 border border-slate-100 rounded-xl p-2">
+                <div className="max-h-[280px] overflow-y-auto overflow-x-hidden space-y-1.5 border border-slate-100 rounded-xl p-2">
                   {localCampaigns.map((c) => {
                     const isChecked = selected.has(c.name);
                     const isEditingThis = editingCampaign === c.name;
@@ -361,9 +361,9 @@ export default function AddToCampaignModal({
 
                         {/* Source and Medium inputs — shown when campaign is selected */}
                         {isChecked && (
-                          <div className="mt-2.5 pt-2 border-t border-slate-100 pl-6 space-y-1.5">
-                            <div className="flex items-center gap-2">
-                              <label className="text-[9px] font-semibold text-slate-400 uppercase w-12 shrink-0">
+                          <div className="mt-2.5 pt-2 border-t border-slate-100 pl-2 sm:pl-6 space-y-2">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                              <label className="text-[9px] font-semibold text-slate-400 uppercase sm:w-12 shrink-0">
                                 Source
                               </label>
                               <input
@@ -372,12 +372,12 @@ export default function AddToCampaignModal({
                                 onChange={(e) =>
                                   updateCampaignDetails(c.name, "source", e.target.value)
                                 }
-                                placeholder="e.g. facebook, newsletter (optional)"
-                                className="flex-1 border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-400 bg-white"
+                                placeholder="e.g. facebook (optional)"
+                                className="w-full min-w-0 sm:flex-1 border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-400 bg-white"
                               />
                             </div>
-                            <div className="flex items-center gap-2">
-                              <label className="text-[9px] font-semibold text-slate-400 uppercase w-12 shrink-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                              <label className="text-[9px] font-semibold text-slate-400 uppercase sm:w-12 shrink-0">
                                 Medium
                               </label>
                               <input
@@ -387,7 +387,7 @@ export default function AddToCampaignModal({
                                   updateCampaignDetails(c.name, "medium", e.target.value)
                                 }
                                 placeholder="e.g. email, cpc (optional)"
-                                className="flex-1 border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-400 bg-white"
+                                className="w-full min-w-0 sm:flex-1 border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-400 bg-white"
                               />
                             </div>
                           </div>
@@ -417,7 +417,7 @@ export default function AddToCampaignModal({
 
             {/* Create new campaign section */}
             {showNewForm ? (
-              <div className="border border-slate-200 rounded-xl p-4 mb-4 bg-slate-50">
+              <div className="border border-slate-200 rounded-xl p-3 sm:p-4 mb-4 bg-slate-50">
                 <p className="text-xs font-bold text-slate-700 mb-3">
                   Create New Campaign
                 </p>
@@ -501,10 +501,10 @@ export default function AddToCampaignModal({
             )}
 
             {/* Action buttons */}
-            <div className="flex gap-3">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={handleSave}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm py-2.5 rounded-xl transition-colors cursor-pointer"
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm py-2.5 px-3 rounded-xl transition-colors cursor-pointer"
               >
                 {selectedSize === 0
                   ? "Remove from All Campaigns"
@@ -512,7 +512,7 @@ export default function AddToCampaignModal({
               </button>
               <button
                 onClick={onClose}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 Cancel
               </button>

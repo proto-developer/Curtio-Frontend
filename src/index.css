@@ -8,6 +8,12 @@
     padding: 0;
   }
 
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
   body {
     font-family: 'Inter', system-ui, sans-serif;
     background-color: #FAFAFA;
@@ -17,6 +23,7 @@
 
   #root {
     min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 

@@ -195,24 +195,24 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#334155]">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#334155] overflow-x-hidden">
       <Navbar />
 
       <main id="main">
       {/* ===================== HERO ===================== */}
-      <section className="relative pt-36 pb-20 px-6 text-center overflow-hidden">
+      <section className="relative pt-24 sm:pt-28 md:pt-36 pb-16 sm:pb-20 px-5 sm:px-6 text-center overflow-hidden">
         <div
-          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[520px] rounded-full opacity-[0.16] blur-[120px] pointer-events-none"
+          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[520px] sm:w-[760px] h-[380px] sm:h-[520px] max-w-full rounded-full opacity-[0.16] blur-[120px] pointer-events-none"
           style={{ background: 'linear-gradient(120deg,#1E1B4B,#312E81 45%,#4F46E5)' }}
         />
 
         <div className="relative max-w-3xl mx-auto z-10">
-          <span className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 text-xs md:text-sm font-semibold px-4 py-1.5 rounded-full mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
+          <span className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 text-xs md:text-sm font-semibold px-3.5 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
             URL shortener with real click tracking
           </span>
 
-          <h1 className="text-[clamp(2.2rem,5vw,3.6rem)] font-extrabold text-slate-900 tracking-tight leading-[1.12] mb-5 max-w-[20ch] mx-auto">
+          <h1 className="text-[clamp(1.95rem,8vw,3.6rem)] font-extrabold text-slate-900 tracking-tight leading-[1.12] mb-4 sm:mb-5 max-w-[20ch] mx-auto">
             One visitor.{' '}
             <span
               className="text-transparent bg-clip-text"
@@ -222,16 +222,16 @@ export default function Landing() {
             </span>
             Not Four.
           </h1>
-          <p className="md:text-lg sm:text-xl text-slate-500 mb-8 max-w-xl mx-auto leading-relaxed">
+          <p className="text-[0.95rem] sm:text-base md:text-lg text-slate-500 mb-7 sm:mb-8 max-w-md sm:max-w-xl mx-auto leading-relaxed text-justify sm:text-center">
             curtio turns long URLs into clean short links and counts every click the right way. You see real visitors, not bots and link previews padding your numbers. That is the data you need before you spend another dollar or another hour on a channel.
           </p>
 
 
           {/* Shortener card */}
           <form onSubmit={handleShorten} className="max-w-2xl mx-auto text-left">
-            <div className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-[0_4px_14px_-2px_rgba(15,23,42,0.10)]">
+            <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-3.5 shadow-[0_4px_14px_-2px_rgba(15,23,42,0.10)]">
               <div className="flex flex-col sm:flex-row gap-2.5">
-                <div className="flex items-center gap-3 flex-1 bg-[#FAFAFA] border border-slate-200 rounded-xl px-4 py-3.5 focus-within:border-indigo-600 focus-within:bg-white focus-within:shadow-[0_0_0_4px_#EEF2FF] transition-colors">
+                <div className="flex items-center gap-3 flex-1 bg-[#FAFAFA] border border-slate-200 rounded-xl px-3.5 sm:px-4 py-3.5 focus-within:border-indigo-600 focus-within:bg-white focus-within:shadow-[0_0_0_4px_#EEF2FF] transition-colors">
                   <LinkIcon size={18} className="text-slate-400 shrink-0" />
                   <label htmlFor="hero-url-input" className="sr-only">
                     Long URL to shorten
@@ -326,9 +326,9 @@ export default function Landing() {
                 </div>
               )}
             </div>
-            <div className="text-md font-semibold text-slate-500 mt-3  text-center flex items-center gap-2 justify-center pt-2">
-              <Link to="/accuracy" className="text-indigo-600 font-semibold">See how we count clicks</Link>
-              <FaArrowRight size={12} className="text-indigo-600 inline" />
+            <div className="text-sm sm:text-base font-semibold text-slate-500 mt-3 text-center flex items-center gap-2 justify-center pt-2">
+              <Link to="/accuracy" className="text-indigo-600 font-semibold hover:underline">See how we count clicks</Link>
+              <FaArrowRight size={12} className="text-indigo-600 inline shrink-0" />
             </div>
 
           </form>
@@ -336,42 +336,42 @@ export default function Landing() {
       </section>
 
       {/* ===================== STATS STRIP ===================== */}
-      <section className="bg-[#F1F5F9] border-y border-slate-200 py-12 px-6">
-        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6">
+      <section className="bg-[#F1F5F9] border-y border-slate-200 py-10 sm:py-12 px-5 sm:px-6">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 sm:gap-6">
           {STATS.map(stat => (
             <div key={stat.label} className="text-center relative">
               <div className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight">{stat.value}</div>
-              <div className="text-xs md:text-sm text-slate-600 mt-2 font-medium">{stat.label}</div>
+              <div className="text-xs md:text-sm text-slate-600 mt-1.5 sm:mt-2 font-medium">{stat.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ===================== PROBLEM / SOLUTION ===================== */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center mb-14">
-          <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+      <section className="py-14 sm:py-20 px-5 sm:px-6">
+        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-14">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-3 sm:mb-4">
             The numbers you've been trusting are wrong
           </h2>
-          <p className="text-slate-500 text-base md:text-lg">
+          <p className="sm text-slate-500 text-[0.95rem] sm:text-base md:text-lg leading-relaxed">
             Most shorteners log a click every time anything touches your link. A bot crawls it. A chat app fetches a preview. A spam filter scans it. All of that gets counted. So one real person can show up as four, and you never know which number was real.
           </p>
         </div>
-        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-bold text-sm mb-4">1</span>
-            <h3 className="font-bold text-slate-900 text-lg mb-2">Counted four times</h3>
-            <p className="text-slate-500 text-sm">A visitor opens your link. A preview bot grabs it. A scanner checks it. Other tools count all three as clicks.</p>
+        <div className="max-w-5xl mx-auto grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+            <span className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 bg-indigo-50 text-indigo-600 font-bold text-sm">1</span>
+            <h3 className="font-bold text-slate-900 text-sm mb-1.5">Counted four times</h3>
+            <p className="text-slate-500 text-xs leading-relaxed">A visitor opens your link. A preview bot grabs it. A scanner checks it. Other tools count all three as clicks.</p>
           </div>
-          <div className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-bold text-sm mb-4">2</span>
-            <h3 className="font-bold text-slate-900 text-lg mb-2">Real and noise look the same</h3>
-            <p className="text-slate-500 text-sm">When the count is inflated, you can't see which channel actually worked. So effort goes into traffic that was never there.</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+            <span className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 bg-orange-50 text-orange-500 font-bold text-sm">2</span>
+            <h3 className="font-bold text-slate-900 text-sm mb-1.5">Real and noise look the same</h3>
+            <p className="text-slate-500 text-xs leading-relaxed">When the count is inflated, you can't see which channel actually worked. So effort goes into traffic that was never there.</p>
           </div>
-          <div className="bg-indigo-50 border border-indigo-600 rounded-2xl p-7 shadow-[0_8px_30px_-10px_rgba(79,70,229,0.35)]">
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold text-sm mb-4">3</span>
-            <h3 className="font-bold text-indigo-700 text-lg mb-2">Curtio counts once</h3>
-            <p className="text-indigo-700/80 text-sm">We remove the duplicates. One real visitor counts as one click, a number on your dashboard you can actually act on.</p>
+          <div className="bg-indigo-50 border border-indigo-600 rounded-2xl p-6 shadow-[0_8px_30px_-10px_rgba(79,70,229,0.35)] sm:col-span-2 md:col-span-1">
+            <span className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 bg-indigo-600 text-white font-bold text-sm">3</span>
+            <h3 className="font-bold text-indigo-700 text-sm mb-1.5">Curtio counts once</h3>
+            <p className="text-indigo-700/80 text-xs leading-relaxed">We remove the duplicates. One real visitor counts as one click, a number on your dashboard you can actually act on.</p>
           </div>
         </div>
       </section>
@@ -407,23 +407,31 @@ export default function Landing() {
           <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
             Three steps and you're done
           </h2>
-          <p className="text-slate-500 text-sm md:text-lg mb-12">From long URL to full insight.</p>
-          <div className="grid sm:grid-cols-3 relative">
+          <p className="text-slate-500 text-sm md:text-lg mb-10 sm:mb-12">From long URL to full insight.</p>
+          <div className="flex flex-col sm:grid sm:grid-cols-3 relative text-left sm:text-center">
             {[
               { step: '1', title: 'Paste', desc: 'Drop any long URL into the Curtio shortener — no account needed for a basic short link.' },
               { step: '2', title: 'Shorten', desc: 'Instantly receive a clean redirect.curtio.io/… link. Sign up to claim a custom alias and track it.' },
               { step: '3', title: 'Track', desc: 'Watch real-time analytics roll in: who clicked, from where, on what device, from which channel.' },
-            ].map((item, i) => (
-              <div key={item.step} className="flex flex-col items-center text-center relative px-4">
+            ].map((item, i, arr) => (
+              <div key={item.step} className="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-0 relative pb-8 last:pb-0 sm:pb-0 sm:px-4">
+                {/* vertical dotted connector — mobile */}
+                {i < arr.length - 1 && (
+                  <span className="sm:hidden absolute left-[19px] top-[40px] bottom-0 w-0.5"
+                    style={{ background: 'repeating-linear-gradient(180deg,#CBD5E1 0 6px,transparent 6px 12px)' }} />
+                )}
+                {/* horizontal dotted connector — sm and up */}
                 {i > 0 && (
                   <span className="hidden sm:block absolute top-[30px] left-[calc(-50%+30px)] w-[calc(100%-60px)] h-0.5"
                     style={{ background: 'repeating-linear-gradient(90deg,#CBD5E1 0 6px,transparent 6px 12px)' }} />
                 )}
-                <div className="relative z-10 w-[60px] h-[60px] rounded-full bg-indigo-600 text-white flex items-center justify-center text-xl font-bold mb-5 shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)]">
+                <div className="relative z-10 shrink-0 w-10 h-10 sm:w-[60px] sm:h-[60px] rounded-full bg-indigo-600 text-white flex items-center justify-center text-base sm:text-xl font-bold sm:mb-5 shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)]">
                   {item.step}
                 </div>
-                <h3 className="font-bold text-slate-900 text-lg mb-2">{item.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
+                <div className="flex-1 sm:flex-none">
+                  <h3 className="font-bold text-slate-900 text-base sm:text-lg mb-1.5 sm:mb-2">{item.title}</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -433,18 +441,18 @@ export default function Landing() {
       <ComparisonSection />
       {/* ===================== TESTIMONIAL ===================== */}
 
-      <section className="py-10 md:py-20 px-6">
+      <section className="py-14 sm:py-20 px-5 sm:px-6">
         <div className="max-w-[1152px] mx-auto">
           {/* Section Heading */}
-          <div className="max-w-3xl mx-auto text-center mb-10">
-            <h2 className="text-lg md:text-4xl font-extrabold tracking-[-0.02em] text-slate-900">
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-[-0.02em] text-slate-900">
               Made for people who live by their numbers
             </h2>
           </div>
 
           {/* Testimonial */}
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-2xl md:text-[2rem] font-semibold leading-[1.3] tracking-[-0.02em] text-slate-900">
+            <p className="text-xl sm:text-2xl md:text-[2rem] font-semibold leading-[1.35] sm:leading-[1.3] tracking-[-0.02em] text-slate-900">
               <span className="text-indigo-600">&ldquo;</span>
               I share links in Facebook groups all day. curtio is the first tool
               where the click count actually matches what I see.
@@ -452,9 +460,9 @@ export default function Landing() {
             </p>
 
             {/* Author */}
-            <div className="mt-8 inline-flex items-center gap-4 text-left">
+            <div className="mt-6 sm:mt-8 inline-flex items-center gap-3 sm:gap-4 text-left">
               <div
-                className="flex h-[50px] w-[50px] items-center justify-center rounded-full border border-slate-200 text-sm font-bold text-slate-500"
+                className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full border border-slate-200 text-sm font-bold text-slate-500"
                 style={{
                   background:
                     "linear-gradient(135deg,#EEF2FF,#FFF3EA)",

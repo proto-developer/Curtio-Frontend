@@ -106,18 +106,37 @@ function Card({ children, className = "" }) {
   );
 }
 
-function StatPill({ icon, label, value }) {
-  return (
-    <div className="flex items-center gap-3 bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-      <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+function StatPill({ icon, label, value, to, highlight = false, title }) {
+  const inner = (
+    <>
+      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0 mb-2.5 sm:mb-3">
         {icon}
       </div>
-      <div>
-        <div className="text-xs text-slate-500 font-medium">{label}</div>
-        <div className="text-2xl font-extrabold text-slate-900">{value}</div>
+      <div className="text-[11px] sm:text-xs text-slate-500 font-medium leading-snug">
+        {label}
       </div>
-    </div>
+      <div className="text-xl sm:text-2xl font-extrabold text-slate-900 truncate mt-0.5 sm:mt-1">
+        {value}
+      </div>
+    </>
   );
+
+  const base =
+    "flex flex-col bg-white rounded-2xl p-4 sm:p-5 shadow-sm min-w-0 border border-slate-100 transition-colors" +
+    (highlight ? " border-l-[3px] border-l-indigo-600" : "");
+
+  if (to) {
+    return (
+      <Link
+        to={to}
+        title={title}
+        className={`${base} hover:border-indigo-300 hover:bg-slate-50/50 cursor-pointer`}
+      >
+        {inner}
+      </Link>
+    );
+  }
+  return <div className={base}>{inner}</div>;
 }
 
 const CustomTooltip = ({ active, payload, label, metricName = "clicks" }) => {
@@ -695,44 +714,42 @@ export default function Analytics() {
         )}
         {/* Prominent Mode Header Banner */}
         {canViewPreClicks && (
-          <div className="sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-base font-extrabold text-slate-900">
-                    {isPreClickView ? "Non-Redirected Link Analytics" : "Redirected Link Analytics"}
-                  </span>
-                  <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${isPreClickView ? "bg-amber-100 text-amber-800" : "bg-indigo-100 text-indigo-800"}`}>
-                    {isPreClickView ? "Non-Redirected" : "Redirected"}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {isPreClickView
-                    ? "Showing visitors who opened the non-redirect link."
-                    : "Showing visitors who completed the countdown and were redirected to the target URL."}
-                </p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <div className="flex items-center flex-wrap gap-2">
+                <span className="text-base font-extrabold text-slate-900">
+                  {isPreClickView ? "Non-Redirected Link Analytics" : "Redirected Link Analytics"}
+                </span>
+                <span className={`shrink-0 whitespace-nowrap text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${isPreClickView ? "bg-amber-100 text-amber-800" : "bg-indigo-100 text-indigo-800"}`}>
+                  {isPreClickView ? "Non-Redirected" : "Redirected"}
+                </span>
               </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {isPreClickView
+                  ? "Showing visitors who opened the non-redirect link."
+                  : "Showing visitors who completed the countdown and were redirected to the target URL."}
+              </p>
             </div>
 
             {/* Toggle for Redirect & Non-Redirect Clicks */}
-            <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 shadow-inner shrink-0">
+            <div className="inline-flex w-full sm:w-auto p-1 bg-slate-100 rounded-xl border border-slate-200 shrink-0">
               <Link
                 to={`/analytics/${id}`}
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${!isPreClickView
+                className={`flex-1 sm:flex-none text-center px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${!isPreClickView
                   ? "bg-indigo-600 text-white shadow-sm"
-                  : "bg-white text-slate-900 hover:text-indigo-600"
+                  : "text-slate-600 hover:text-indigo-600"
                   }`}
               >
-                Redirected Clicks
+                Redirected
               </Link>
               <Link
                 to={`/analytics/${id}?view=preclick`}
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${isPreClickView
+                className={`flex-1 sm:flex-none text-center px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${isPreClickView
                   ? "bg-indigo-600 text-white shadow-sm"
-                  : "bg-white text-slate-900 hover:text-indigo-600"
+                  : "text-slate-600 hover:text-indigo-600"
                   }`}
               >
-                Non-Redirected Clicks
+                Non-Redirected
               </Link>
             </div>
           </div>
@@ -740,25 +757,17 @@ export default function Analytics() {
 
 
         {/* Stats pills */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
           {canViewPreClicks ? (
-            <Link
+            <StatPill
               to={isPreClickView ? `/analytics/${id}` : `/analytics/${id}?view=preclick`}
-              className="flex items-center gap-3 bg-white border border-l-2 border-l-indigo-600 rounded-2xl border-y-slate-100 border-r-slate-100 p-3 sm:p-5 shadow-sm hover:border-2 hover:border-indigo-600 hover:shadow-indigo-100 transition-all min-w-0"
-            >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
-                <Activity size={18} className="text-indigo-600" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
-                  {isPreClickView ? "Redirected Clicks" : "Non-Redirected Clicks"}
-                </div>
-                <div className="text-2xl font-extrabold text-slate-900">
-                  {otherViewCount.toLocaleString()}
-                </div>
-              </div>
-            </Link>
+              highlight
+              title="Switch view"
+              icon={<Activity size={18} className="text-indigo-600" />}
+              label={isPreClickView ? "Redirected Clicks" : "Non-Redirected Clicks"}
+              value={otherViewCount.toLocaleString()}
+            />
           ) : (
             <StatPill
               icon={<TrendingUp size={18} className="text-orange-500" />}

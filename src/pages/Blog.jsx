@@ -66,34 +66,34 @@ export default function Blog() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
 
       <main id="main">
       {/* Hero */}
-      <section className="pt-28 pb-6 md:pb-12 px-6 text-center border-b border-slate-100">
+      <section className="pt-24 sm:pt-28 md:pt-36 pb-10 sm:pb-14 px-5 sm:px-6 text-center border-b border-slate-100">
         <div className="max-w-2xl mx-auto">
-          <span className="inline-block bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
+          <span className="inline-block bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-widest px-3.5 py-1.5 rounded-full mb-5 sm:mb-6">
             The Curtio Blog
           </span>
-          <h1 className="text-2xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+          <h1 className="text-[clamp(1.95rem,8vw,3.6rem)] font-extrabold text-slate-900 tracking-tight leading-[1.12] mb-3 sm:mb-4">
             Insights on links, analytics & growth
           </h1>
-          <p className="text-slate-500 md:text-lg">
+          <p className="text-[0.95rem] sm:text-base md:text-lg text-slate-500 max-w-md sm:max-w-none mx-auto leading-relaxed text-justify sm:text-center">
             Practical guides and ideas for marketers, developers, and builders who care about their links.
           </p>
         </div>
       </section>
 
-      <div className="max-w-[1152px] mx-auto px-6 py-12">
+      <div className="max-w-[1152px] mx-auto px-5 sm:px-6 py-14 sm:py-20">
         <>
           {/* Featured post */}
             {featured && (activeCategory === 'All') && (
               <Link
                 to={`/blog/${featured.slug.current}`}
-                className="group block mb-14 bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
+                className="group block mb-10 sm:mb-14 bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
               >
-                <div className="h-52 relative flex items-end p-8 overflow-hidden bg-slate-100">
+                <div className="h-44 sm:h-52 relative flex items-end p-6 sm:p-8 overflow-hidden bg-slate-100">
                   {featured.coverImage ? (
                     <img
                       src={urlForImage(featured.coverImage)}
@@ -112,11 +112,11 @@ export default function Blog() {
                     {featured.category}
                   </span>
                 </div>
-                <div className="p-8">
-                  <h2 className="text-base md:text-2xl sm:text-3xl font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors mb-3">
+                <div className="p-6 sm:p-8">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors mb-3">
                     {featured.title}
                   </h2>
-                  <p className="text-slate-500 md:text-base text-sm leading-relaxed mb-5 max-w-2xl">
+                  <p className="text-slate-500 text-[0.95rem] md:text-base leading-relaxed mb-5 max-w-2xl">
                     {featured.excerpt}
                   </p>
                   <div className="flex flex-col md:flex-row md:items-center  justify-between">
@@ -140,12 +140,12 @@ export default function Blog() {
             )}
 
             {/* Category filter */}
-            <div className="flex items-center gap-2 flex-wrap mb-8">
+            <div className="flex items-center gap-2 flex-wrap mb-8 sm:mb-10">
               {CATEGORIES.map(cat => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`text-sm font-medium px-4 py-1.5 rounded-full border transition-all ${activeCategory === cat
+                  className={`text-sm font-medium px-3.5 sm:px-4 py-1.5 rounded-full border transition-all ${activeCategory === cat
                       ? 'bg-indigo-600 text-white border-indigo-600'
                       : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
                     }`}
@@ -156,7 +156,7 @@ export default function Blog() {
             </div>
 
             {/* Post grid */}
-            <div className="grid sm:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
               {filtered.map(post => (
                 <Link
                   key={post._id}
@@ -203,7 +203,7 @@ export default function Blog() {
             </div>
 
             {filtered.length === 0 && (
-              <div className="text-center py-20 text-slate-400 text-sm">
+              <div className="text-center py-16 sm:py-20 text-slate-400 text-sm">
                 No posts in this category yet.
               </div>
             )}

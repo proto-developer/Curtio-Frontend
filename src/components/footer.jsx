@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-slate-200 bg-white py-16">
-      <div className="mx-auto max-w-[1152px] px-6">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="border-t border-slate-200 bg-white py-12 sm:py-16">
+      <div className="mx-auto max-w-[1152px] px-5 sm:px-6">
+        <div className="grid grid-cols-2 gap-8 sm:gap-10 md:grid-cols-4">
           {/* Brand */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <Link
               to="/"
               className="text-3xl font-bold tracking-[-0.03em] text-slate-900 font-space"
@@ -25,16 +25,12 @@ const Footer = () => {
               Product
             </h4>
 
-            <div className="space-y-2">
-              <Link to="/features" className="block text-slate-700 transition hover:text-indigo-600">
+            <div className="space-y-2.5 text-sm">
+              <Link to="/features" className="block text-slate-600 transition hover:text-indigo-600">
                 Features
               </Link>
 
-              {/* <Link to="/pricing" className="block text-slate-700 transition hover:text-indigo-600">
-                Pricing
-              </Link> */}
-
-              <Link to="/accuracy" className="block text-slate-700 transition hover:text-indigo-600">
+              <Link to="/accuracy" className="block text-slate-600 transition hover:text-indigo-600">
                 Accuracy
               </Link>
             </div>
@@ -46,44 +42,44 @@ const Footer = () => {
               Company
             </h4>
 
-            <div className="space-y-2">
-              <Link to="/blog" className="block text-slate-700 transition hover:text-indigo-600">
+            <div className="space-y-2.5 text-sm">
+              <Link to="/blog" className="block text-slate-600 transition hover:text-indigo-600">
                 Blog
               </Link>
             </div>
           </div>
 
           {/* Legal */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h4 className="mb-4 text-xs font-semibold uppercase tracking-widest text-slate-500">
               Legal
             </h4>
 
-            <div className="space-y-2">
-              <Link to="/privacy-policy" className="block text-slate-700 transition hover:text-indigo-600">
+            <div className="space-y-2.5 text-sm">
+              <Link to="/privacy-policy" className="block text-slate-600 transition hover:text-indigo-600">
                 Privacy Policy
               </Link>
 
-              <Link to="/terms-of-service" className="block text-slate-700 transition hover:text-indigo-600">
+              <Link to="/terms-of-service" className="block text-slate-600 transition hover:text-indigo-600">
                 Terms of Service
               </Link>
 
-              <Link to="/refund-policy" className="block text-slate-700 transition hover:text-indigo-600">
+              <Link to="/refund-policy" className="block text-slate-600 transition hover:text-indigo-600">
                 Refund &amp; Return Policy
               </Link>
 
-              <Link to="/shipping-policy" className="block text-slate-700 transition hover:text-indigo-600">
+              <Link to="/shipping-policy" className="block text-slate-600 transition hover:text-indigo-600">
                 Shipping &amp; Service Policy
               </Link>
 
-              <Link to="/pricing" className="block text-slate-700 transition hover:text-indigo-600">
+              <Link to="/pricing" className="block text-slate-600 transition hover:text-indigo-600">
                 Pricing Plan
               </Link>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-slate-200 pt-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between text-center">
+        <div className="mt-10 sm:mt-12 flex flex-col gap-3 border-t border-slate-200 pt-6 text-sm text-slate-500 text-center md:flex-row md:items-center md:justify-between">
           <span>© 2026 curtio.io</span>
         </div>
       </div>

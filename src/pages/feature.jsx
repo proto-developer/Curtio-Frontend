@@ -220,7 +220,7 @@ function VisualCard({ block }) {
 
   return (
     <div
-      className={`relative rounded-[24px] border bg-white overflow-hidden transition-all duration-250
+      className={`relative w-full max-w-[380px] mx-auto lg:max-w-none rounded-[18px] sm:rounded-[24px] border bg-white overflow-hidden transition-all duration-250
         hover:-translate-y-[3px]
         ${emphasis
           ? "border-indigo-500 shadow-[0_24px_60px_-18px_rgba(79,70,229,0.4)] hover:shadow-[0_32px_70px_-18px_rgba(79,70,229,0.45)]"
@@ -229,14 +229,14 @@ function VisualCard({ block }) {
     >
       {/* "The whole point" badge */}
       {highlight && (
-        <div className="absolute top-6 right-5 z-20 inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1.5 text-[0.72rem] font-semibold text-white shadow-[0_6px_16px_-4px_rgba(79,70,229,0.5)] whitespace-nowrap">
-          <TargetSvg className="w-[13px] h-[13px] flex-none" />
+        <div className="absolute top-3 right-3 sm:top-6 sm:right-5 z-20 inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-indigo-600 px-2 py-0.5 sm:px-3 sm:py-1.5 text-[0.6rem] sm:text-[0.72rem] font-semibold text-white shadow-[0_6px_16px_-4px_rgba(79,70,229,0.5)] whitespace-nowrap">
+          <TargetSvg className="w-[10px] h-[10px] sm:w-[13px] sm:h-[13px] flex-none" />
           The whole point
         </div>
       )}
 
       {/* Chrome bar */}
-      <div className="flex items-center gap-1.5 border-b border-slate-200 bg-white px-4 py-3">
+      <div className="flex items-center gap-1.5 border-b border-slate-200 bg-white px-3 py-2.5 sm:px-4 sm:py-3">
         <i className="w-2.5 h-2.5 rounded-full bg-red-400 block not-italic" />
         <i className="w-2.5 h-2.5 rounded-full bg-yellow-400 block not-italic" />
         <i className="w-2.5 h-2.5 rounded-full bg-green-400 block not-italic" />
@@ -247,8 +247,8 @@ function VisualCard({ block }) {
 
       {/* Stage */}
       <div
-        className={`relative flex min-h-[20px] md:min-h-[300px] items-center justify-center text-center ${mockupImage ? '' : 'p-7'}`}
-        style={stageStyle}
+        className={`relative flex items-center justify-center text-center ${mockupImage ? '' : 'min-h-[20px] md:min-h-[300px] p-7'}`}
+        style={mockupImage ? undefined : stageStyle}
       >
         {/* Ghost watermark */}
         <span
@@ -261,7 +261,7 @@ function VisualCard({ block }) {
         </span>
 
         {mockupImage ? (
-          <img src={mockupImage} alt="Mockup" className="relative z-10 w-full h-full object-cover" />
+          <img src={mockupImage} alt="Mockup" className="relative z-10 block w-full h-auto" />
         ) : visualType === "analytics" ? (
           <div className="relative z-10 flex flex-col gap-3 w-full max-w-[300px]">
             {[
@@ -340,42 +340,42 @@ export default function Features() {
     <>
       <Navbar />
 
-      <main id="main">
+      <main id="main" className="overflow-x-hidden">
       {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-[152px] pb-[76px] text-center">
+      <section className="relative overflow-hidden pt-24 sm:pt-28 md:pt-36 pb-16 sm:pb-20 text-center">
         <div
-          className="pointer-events-none absolute left-1/2 top-[-160px] -translate-x-1/2 w-[760px] h-[520px] rounded-full opacity-[.16]"
+          className="pointer-events-none absolute left-1/2 top-[-160px] -translate-x-1/2 w-[520px] sm:w-[760px] h-[380px] sm:h-[520px] max-w-full rounded-full opacity-[.16]"
           style={{ background: "linear-gradient(120deg,#1E1B4B,#312E81 45%,#4F46E5)", filter: "blur(120px)" }}
         />
 
-        <div className="relative z-10 max-w-[1152px] mx-auto px-6">
+        <div className="relative z-10 max-w-[1152px] mx-auto px-5 sm:px-6">
           {/* Eyebrow */}
-          <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3.5 py-[7px] text-[0.8rem] font-semibold text-indigo-600">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 block" />
+          <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3.5 sm:px-4 py-1.5 text-xs md:text-sm font-semibold text-indigo-600">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
             Features
           </span>
 
           {/* Heading */}
-          <h1 className="mt-6 text-[clamp(2.4rem,5vw,3.6rem)] font-extrabold tracking-[-0.035em] text-slate-900 max-w-[20ch] mx-auto leading-[1.12] mb-5">
+          <h1 className="mt-5 sm:mt-6 text-[clamp(1.95rem,8vw,3.6rem)] font-extrabold tracking-[-0.035em] text-slate-900 max-w-[20ch] mx-auto leading-[1.12] mb-4 sm:mb-5">
             A short link is simple. Knowing what it did should be too.
           </h1>
 
           {/* Sub */}
-          <p className="text-[1.225rem] text-slate-500 max-w-[60ch] mx-auto leading-relaxed">
+          <p className="text-[0.95rem] sm:text-base md:text-lg text-slate-500 max-w-md sm:max-w-[60ch] mx-auto leading-relaxed text-justify sm:text-center">
             curtio gives every link the tools to be shared, controlled, and measured the right way. No bloat. No upsell maze. Here is the full list in plain terms.
           </p>
 
           {/* Buttons */}
-          <div className="mt-9 flex flex-wrap justify-center gap-3">
+          <div className="mt-7 sm:mt-9 flex flex-col sm:flex-row sm:flex-wrap sm:justify-center gap-3">
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 rounded-[14px] bg-indigo-600 px-[30px] py-4 text-[1.05rem] font-semibold text-white shadow hover:bg-indigo-700 hover:-translate-y-px transition-all"
+              className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-indigo-600 px-6 sm:px-[30px] py-3.5 sm:py-4 text-sm sm:text-[1.05rem] font-semibold text-white shadow hover:bg-indigo-700 hover:-translate-y-px transition-all"
             >
               Get started free
             </Link>
             <Link
               to="/pricing"
-              className="inline-flex items-center gap-2 rounded-[14px] border border-slate-200 bg-white px-[30px] py-4 text-[1.05rem] font-semibold text-slate-800 hover:border-slate-400 hover:bg-slate-50 transition-all"
+              className="inline-flex items-center justify-center gap-2 rounded-[14px] border border-slate-200 bg-white px-6 sm:px-[30px] py-3.5 sm:py-4 text-sm sm:text-[1.05rem] font-semibold text-slate-800 hover:border-slate-400 hover:bg-slate-50 transition-all"
             >
               Compare plans
             </Link>
@@ -384,15 +384,16 @@ export default function Features() {
       </section>
 
       {/* ── FEATURE BLOCKS ───────────────────────────────────── */}
-      <section className="py-20">
-        <div className="max-w-[1152px] mx-auto px-6">
-          <div className="flex flex-col gap-[100px]">
+      <section className="py-14 sm:py-20">
+        <div className="max-w-[1152px] mx-auto px-5 sm:px-6">
+          <div className="flex flex-col gap-12 sm:gap-16 lg:gap-[100px]">
             {BLOCKS.map((block, i) => (
               <article
                 key={i}
-                className={`grid items-center gap-16 lg:grid-cols-2 ${block.flip
-                  ? "[&>*:first-child]:lg:order-2 [&>*:last-child]:lg:order-1"
-                  : ""
+                className={`grid items-center gap-6 sm:gap-10 lg:gap-16 lg:grid-cols-2
+                  [&>*:first-child]:order-2 [&>*:last-child]:order-1 ${block.flip
+                  ? "lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1"
+                  : "lg:[&>*:first-child]:order-1 lg:[&>*:last-child]:order-2"
                   }`}
               >
                 {/* Visual */}
@@ -400,27 +401,27 @@ export default function Features() {
 
                 {/* Text */}
                 <div>
-                  {/* Icon box */}
+                  {/* Icon */}
                   <div
-                    className={`w-[52px] h-[52px] rounded-[14px] flex items-center justify-center mb-6
-                      [&>svg]:w-[26px] [&>svg]:h-[26px]
+                    className={`w-9 h-9 sm:w-[52px] sm:h-[52px] rounded-[10px] sm:rounded-[14px] flex items-center justify-center mb-3 sm:mb-5 mx-auto sm:mx-0
+                      [&>svg]:w-[18px] [&>svg]:h-[18px] sm:[&>svg]:w-[26px] sm:[&>svg]:h-[26px]
                       ${block.tone === "orange" ? "bg-orange-50 text-orange-500" : "bg-indigo-50 text-indigo-600"}`}
                   >
                     <block.Icon />
                   </div>
 
                   {/* Heading */}
-                  <h2 className="text-[clamp(1.6rem,2.6vw,2.05rem)] font-extrabold tracking-tight text-slate-900 leading-[1.12] mb-4">
+                  <h2 className="text-[clamp(1.45rem,6vw,2.05rem)] font-extrabold tracking-tight text-slate-900 leading-[1.15] mb-3 sm:mb-4 text-center sm:text-left">
                     {block.title}
                   </h2>
 
                   {/* Body */}
-                  <p className="text-[1.075rem] text-slate-500 leading-[1.65]">
+                  <p className="text-[0.95rem] sm:text-[1.075rem] text-slate-500 leading-[1.65] text-justify sm:text-left">
                     {block.body}
                   </p>
 
                   {/* You control */}
-                  <p className="mt-6 flex items-start gap-2.5 text-[0.92rem] text-slate-500 leading-relaxed">
+                  <p className="mt-5 sm:mt-6 flex items-start gap-2.5 text-[0.88rem] sm:text-[0.92rem] text-slate-500 leading-relaxed">
                     <span className="mt-0.5 flex-none text-slate-400 w-[17px] h-[17px] [&>svg]:w-full [&>svg]:h-full">
                       <SliderSvg />
                     </span>
