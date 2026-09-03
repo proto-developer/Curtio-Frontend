@@ -7,7 +7,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const Google_Client_ID = import.meta.env.VITE_CLIENT_ID;
 if (!Google_Client_ID) {
-  console.warn("⚠️ VITE_CLIENT_ID is undefined! Google Auth popup/modal will NOT open.");
+  console.warn("⚠️ CLIENT_ID is undefined! Google Auth popup/modal will NOT open.");
 } else {
 
 }
