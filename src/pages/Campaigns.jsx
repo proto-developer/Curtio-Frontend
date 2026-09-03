@@ -52,6 +52,7 @@ import Sidebar from "../components/Sidebar";
 import Filter from "../components/filter";
 import ShareModal from "../components/LinkShareModal";
 import LabelCell from "../components/LabelCell";
+import MobileLinkList from "../components/MobileLinkList";
 import {
   hasUnlimitedLinks,
   linkLimitFor,
@@ -1218,42 +1219,42 @@ export default function Campaigns() {
         />
 
         {/* ── Main Content ── */}
-        <main className="flex-1 min-w-0 md:ml-60 lg:ml-80 px-2 lg:px-4 sm:px-6 md:px-8 py-6 md:py-8 space-y-3 lg:space-y-6">
+        <main className="flex-1 min-w-0 lg:ml-72 xl:ml-80 px-2 lg:px-4 sm:px-6 md:px-8 py-6 md:py-8 space-y-3 lg:space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-start gap-3 min-w-0">
+            <button
+              className="lg:hidden p-2 rounded-xl border border-slate-200 bg-white shadow-sm text-slate-600 hover:bg-slate-50 shrink-0"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={18} />
+            </button>
+
+            {selectedCampaign ? (
               <button
-                className="md:hidden p-2 rounded-xl border border-slate-200 bg-white shadow-sm text-slate-600 hover:bg-slate-50 shrink-0"
-                onClick={() => setSidebarOpen(true)}
+                onClick={() => setSelectedCampaign(null)}
+                className="p-2 rounded-xl cursor-pointer border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 shrink-0 transition-colors"
+                title="Back to Overview"
               >
-                <Menu size={18} />
+                <ArrowLeft size={16} />
               </button>
+            ) : null}
 
-              {selectedCampaign ? (
-                <button
-                  onClick={() => setSelectedCampaign(null)}
-                  className="p-2 rounded-xl cursor-pointer border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 shrink-0 transition-colors"
-                  title="Back to Overview"
-                >
-                  <ArrowLeft size={16} />
-                </button>
-              ) : null}
-
-              <div className="min-w-0">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 truncate">
-                  {selectedCampaign
-                    ? `Campaign: ${selectedCampaign}`
-                    : "Campaigns Manager"}
-                </h1>
-                <p className="text-slate-500 text-xs sm:text-sm mt-0.5 truncate">
-                  {selectedCampaign
-                    ? `Detailed analysis of marketing URLs tagged under "${selectedCampaign}"`
-                    : "Track, compare, and manage aggregated performance of links grouped by UTM campaigns"}
-                </p>
-              </div>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 truncate">
+                {selectedCampaign
+                  ? `Campaign: ${selectedCampaign}`
+                  : "Campaigns Manager"}
+              </h1>
+              <p className="text-slate-500 text-xs sm:text-sm mt-0.5 truncate">
+                {selectedCampaign
+                  ? `Detailed analysis of marketing URLs tagged under "${selectedCampaign}"`
+                  : "Track, compare, and manage aggregated performance of links grouped by UTM campaigns"}
+              </p>
             </div>
+          </div>
 
-            <div className="flex items-center gap-1">
+          {/* Action buttons row */}
+          <div className="flex flex-wrap items-center justify-end gap-2 -mt-1 lg:-mt-3">
               <button
                 onClick={() => {
                   // Same button is "New Link" inside a campaign and
@@ -1278,10 +1279,10 @@ export default function Campaigns() {
                   }
                   setShowCreateForm(!showCreateForm);
                 }}
-                className="flex items-center gap-2 font-semibold text-sm px-3 sm:px-4 py-2.5 rounded-xl transition-colors shadow-sm bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 cursor-pointer"
+                className="flex items-center gap-1.5 sm:gap-2 font-semibold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-colors shadow-sm bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 cursor-pointer"
               >
-                <Plus size={16} />
-                <span className="hidden sm:inline text-xs md:text-md">
+                <Plus size={15} />
+                <span>
                   {selectedCampaign ? "New Link" : "New Campaign"}
                 </span>
               </button>
@@ -1289,7 +1290,7 @@ export default function Campaigns() {
                 <>
                   <button
                     onClick={() => setFilterOpen((s) => !s)}
-                    className={`ml-2 px-3 py-2 border rounded-xl shadow-sm cursor-pointer flex items-center gap-2 transition-colors ${filterOpen ? "bg-indigo-50 border-indigo-200 text-indigo-600" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                    className={`px-3.5 py-2.5 border rounded-xl shadow-sm cursor-pointer flex items-center gap-2 transition-colors ${filterOpen ? "bg-indigo-50 border-indigo-200 text-indigo-600" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"}`}
                   >
                     <svg
                       className="w-4 h-4"
@@ -1315,15 +1316,14 @@ export default function Campaigns() {
                         links: campaignLinks,
                       })
                     }
-                    className="ml-1 px-3 py-2 border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl shadow-sm cursor-pointer flex items-center gap-1.5 text-xs font-semibold transition-colors"
+                    className="px-3.5 py-2.5 border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl shadow-sm cursor-pointer flex items-center gap-1.5 text-sm font-semibold transition-colors"
                     title="Delete Campaign"
                   >
                     <Trash2 size={14} />
-                    <span className="hidden sm:inline">Delete </span>
+                    <span className="hidden sm:inline">Delete</span>
                   </button>
                 </>
               )}
-            </div>
           </div>
           {selectedCampaign && filterOpen && (
             <Filter
@@ -1687,7 +1687,67 @@ export default function Campaigns() {
                   links
                 </p>
 
-                <div className="overflow-x-auto">
+                {/* ── Mobile & tablet: stacked cards, no horizontal scroll ── */}
+                <div className="lg:hidden space-y-3">
+                  {campaignsList.length === 0 ? (
+                    <div className="text-center py-10 text-slate-400 text-sm">
+                      <FolderOpen size={30} className="mx-auto text-slate-200 mb-2" />
+                      No campaigns detected yet.
+                      <br />
+                      <span className="text-xs">
+                        Create a new link with the `utm_campaign` field filled to start a campaign.
+                      </span>
+                    </div>
+                  ) : (
+                    campaignsList.map((c) => (
+                      <div
+                        key={c.name}
+                        onClick={() => setSelectedCampaign(c.name)}
+                        className="rounded-xl border border-slate-100 bg-slate-50/40 p-3.5 cursor-pointer transition-colors hover:border-indigo-200"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 shrink-0">
+                              <Target size={13} />
+                            </div>
+                            <span className="font-bold text-slate-900 text-sm truncate">
+                              {c.name}
+                            </span>
+                          </div>
+                          <div
+                            className="flex items-center gap-1 shrink-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button
+                              onClick={() =>
+                                setDeleteCampaignModal({ name: c.name, links: c.links })
+                              }
+                              title="Delete Campaign"
+                              className="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 cursor-pointer transition-colors"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                            <ChevronRight size={16} className="text-slate-400" />
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+                          <span>
+                            <b className="text-slate-800">{c.links.length}</b> URLs
+                          </span>
+                          <span>
+                            <b className="text-slate-800">{c.clicks.toLocaleString()}</b> clicks
+                          </span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full font-semibold bg-green-50 text-green-700">
+                            {c.activeCount} / {c.links.length} Active
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* ── Desktop: full table ── */}
+                <div className="hidden lg:block overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-slate-100 text-slate-400 text-[10px] lg:text-xs font-semibold lg:font-bold uppercase tracking-wider">
@@ -1813,6 +1873,7 @@ export default function Campaigns() {
                   label="UTM Parameters"
                   value={`${[...new Set(campaignLinks.map((l) => getSourceParam(l.original)).filter(Boolean))].length} Sources`}
                   sub="Click channels"
+                  className={isOwner() ? "sm:col-span-2 lg:col-span-1" : ""}
                 />
               </div>
               {/* Campaign Links List */}
@@ -1825,7 +1886,80 @@ export default function Campaigns() {
                   in this group
                 </p>
 
-                <div className="overflow-x-auto">
+                {/* ── Mobile & tablet: compact list + detail sheet, no horizontal scroll ── */}
+                {(() => {
+                  const rows = [...campaignLinks]
+                    .sort(
+                      (a, b) =>
+                        new Date(b.rawCreatedAt || b.createdAt) -
+                        new Date(a.rawCreatedAt || a.createdAt)
+                    )
+                    .map((link) => {
+                      const pairSource =
+                        campaignSourceMap[`${link.id}::${selectedCampaign}`] ||
+                        getSourceParam(link.original);
+                      const pairMedium =
+                        campaignMediumMap[`${link.id}::${selectedCampaign}`] ||
+                        getMediumParam(link.original);
+                      let campaignShortUrl = `${link.short}?utm_campaign=${encodeURIComponent(
+                        selectedCampaign
+                      )}`;
+                      if (pairSource)
+                        campaignShortUrl += `&utm_source=${encodeURIComponent(pairSource)}`;
+                      if (pairMedium)
+                        campaignShortUrl += `&utm_medium=${encodeURIComponent(pairMedium)}`;
+                      return {
+                        ...link,
+                        short: campaignShortUrl,
+                        _orig: link,
+                        _pairSource: pairSource,
+                        _pairMedium: pairMedium,
+                      };
+                    });
+                  return (
+                    <MobileLinkList
+                      className="lg:hidden"
+                      links={rows}
+                      accountLabels={accountLabels}
+                      copiedId={copied}
+                      onCopy={handleCopy}
+                      onToggle={handleToggle}
+                      onDelete={handleDelete}
+                      onShare={setShareLink}
+                      onQr={setQrLink}
+                      showAddToCampaign={false}
+                      onRemoveFromCampaign={(l) =>
+                        setRemoveLinkFromCampaignModal({
+                          linkObj: l._orig,
+                          campaignName: selectedCampaign,
+                        })
+                      }
+                      onLabelsChanged={fetchUrls}
+                      refresh={() => setLinks((prev) => [...prev])}
+                      renderMeta={(l) => (
+                        <div className="flex gap-1.5 flex-wrap">
+                          <span className="text-[10px] bg-indigo-50 text-indigo-600 font-semibold px-2 py-0.5 rounded-full">
+                            campaign: {selectedCampaign}
+                          </span>
+                          {l._pairSource && (
+                            <span className="text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-full">
+                              src: {l._pairSource}
+                            </span>
+                          )}
+                          {l._pairMedium && (
+                            <span className="text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-full">
+                              med: {l._pairMedium}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      emptyText="No links tagged in this campaign yet."
+                    />
+                  );
+                })()}
+
+                {/* ── Desktop: full table ── */}
+                <div className="hidden lg:block overflow-x-auto">
                   <table className="w-full text-left border-collapse" style={{ minWidth: "780px" }}>
                     <thead>
                       <tr className="border-b border-slate-100 text-slate-400 text-[10px] font-bold uppercase tracking-wider">

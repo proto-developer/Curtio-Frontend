@@ -65,7 +65,7 @@ export default function Navbar() {
       >
         Skip to content
       </a>
-      <div className="max-w-[1152px] mx-auto px-6 flex items-center gap-4 h-[68px] relative">
+      <div className="max-w-[1152px] mx-auto px-5 sm:px-6 flex items-center gap-4 h-[68px] relative">
         {/* Logo */}
         <Link
           to="/"
@@ -92,12 +92,12 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop Buttons */}
-        <div className="hidden md:flex items-center gap-2 ml-auto">
+        <div className="hidden md:flex items-center gap-2.5 ml-auto">
           {isLoggedIn ? (
             <>
               <Link
                 to="/dashboard/analytics"
-                className="font-semibold text-[0.975rem] px-4 py-3 rounded-xl text-slate-700 hover:text-slate-900 transition"
+                className="font-semibold text-[0.95rem] px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50/50 transition-colors"
               >
                 Dashboard
               </Link>
@@ -113,14 +113,14 @@ export default function Navbar() {
             <>
               <Link
                 to="/login"
-                className="font-semibold text-[0.975rem] px-4 py-3 rounded-xl text-slate-700 hover:text-slate-900 transition"
+                className="font-semibold text-[0.95rem] px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50/50 transition-colors"
               >
                 Sign in
               </Link>
 
               <Link
                 to="/register"
-                className="font-semibold text-[0.975rem] px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                className="font-semibold text-[0.95rem] px-5 py-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-sm"
               >
                 Get started free
               </Link>
@@ -139,7 +139,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden flex flex-col gap-1 px-6 py-4 border-t border-slate-200 bg-white">
+        <div className="md:hidden flex flex-col gap-1 px-5 sm:px-6 py-4 border-t border-slate-200 bg-white">
           {navItems.map((item) => (
             <Link
               key={item.label}
@@ -158,7 +158,7 @@ export default function Navbar() {
             <Link
               to="/dashboard/analytics"
               onClick={() => setMobileOpen(false)}
-              className="mt-2 px-3 py-3 rounded-lg font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600"
+              className="mt-3 px-4 py-3 rounded-xl border border-slate-200 text-center font-semibold text-slate-700 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50/50 transition-colors"
             >
               Dashboard
             </Link>
@@ -167,7 +167,7 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="mt-2 px-3 py-3 rounded-lg font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600"
+                className="mt-3 px-4 py-3 rounded-xl border border-slate-200 text-center font-semibold text-slate-700 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50/50 transition-colors"
               >
                 Sign in
               </Link>
@@ -175,7 +175,7 @@ export default function Navbar() {
               <Link
                 to="/register"
                 onClick={() => setMobileOpen(false)}
-                className="mt-2 px-3 py-3 rounded-xl bg-indigo-600 text-white text-center font-semibold hover:bg-indigo-700"
+                className="mt-2 px-4 py-3 rounded-xl bg-indigo-600 text-white text-center font-semibold hover:bg-indigo-700 transition-colors"
               >
                 Get started free
               </Link>

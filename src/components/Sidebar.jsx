@@ -92,10 +92,10 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Mobile sidebar backdrop */}
+      {/* Sidebar backdrop — mobile & tablet */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -103,15 +103,15 @@ export default function Sidebar({
       {/* ── Sidebar ── */}
       <aside
         className={`
-          fixed top-0 left-0 bottom-0 z-50 xl:w-80 lg:w-72 md:w-64 w-72 max-w-[85vw] bg-white border-r border-slate-100
+          fixed top-0 left-0 bottom-0 z-50 xl:w-80 lg:w-72 w-72 max-w-[85vw] bg-white border-r border-slate-100
           flex flex-col py-5 px-3 xl:px-4
           transition-transform duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0
+          lg:translate-x-0
         `}
       >
-        {/* Close button — mobile only */}
-        <div className="flex justify-end mb-2 md:hidden">
+        {/* Close button — mobile & tablet */}
+        <div className="flex justify-end mb-2 lg:hidden">
           <button
             onClick={() => setSidebarOpen(false)}
             className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"

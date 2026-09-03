@@ -44,6 +44,7 @@ import {
   FREE_LINK_LIMIT,
 } from "../premiumAccess";
 import AddToCampaignModal from "../components/AddToCampaignModal";
+import MobileLinkList from "../components/MobileLinkList";
 import useSocket from "../socket/useSocket";
 import env from "../../Config/env";
 import QrModal from "../components/ui/QrModal";
@@ -548,27 +549,30 @@ export default function Dashboard() {
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} linksCount={links.length} FREE_LIMIT={FREE_LIMIT} isPremium={isPremium} subscriptionExpired={subscriptionExpired} />
 
         {/* ── Main ── */}
-        <main className="flex-1 min-w-0 md:ml-60 lg:ml-80 px-4 sm:px-6 md:px-8 py-6 md:py-8">
+        <main className="flex-1 min-w-0 lg:ml-72 xl:ml-80 px-4 sm:px-6 md:px-8 py-6 md:py-8">
 
           {/* Top bar */}
-          <div className="flex items-center justify-between mb-2 md:mb-6  gap-1 md:gap-3">
-            {/* Hamburger — mobile only */}
+          <header className="flex items-start gap-2 md:gap-3 mb-3">
+            {/* Hamburger — mobile & tablet */}
             <button
-              className="md:hidden p-2 rounded-xl border border-slate-200 bg-white shadow-sm text-slate-600 hover:bg-slate-50 shrink-0"
+              className="lg:hidden shrink-0 p-2 rounded-xl border border-slate-200 bg-white shadow-sm text-slate-600 hover:bg-slate-50"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu size={18} />
             </button>
 
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 truncate">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900">
                 My Links
               </h1>
-              <p className="text-slate-500 text-xs sm:text-sm mt-0.5 hidden sm:block">
+              <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
                 Manage and track your shortened URLs.
               </p>
             </div>
+          </header>
 
+          {/* Action row */}
+          <div className="flex justify-end -mt-1 mb-4">
             <button
               onClick={() => {
                 if (atLimit) {
@@ -577,10 +581,10 @@ export default function Dashboard() {
                   setShowForm(!showForm);
                 }
               }}
-              className="flex items-center gap-2 font-semibold text-sm px-3 sm:px-4 py-2.5 rounded-xl transition-colors shadow-sm bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 cursor-pointer"
+              className="flex items-center gap-2 font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors shadow-sm bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
             >
               <Plus size={16} />
-              <span className="hidden sm:inline">New Link</span>
+              <span>New Link</span>
             </button>
           </div>
 
@@ -743,7 +747,7 @@ export default function Dashboard() {
           )}
 
           {/* Stats */}
-          <div className={`grid grid-cols-2 sm:grid-cols-2 ${canViewPreClicks ? "lg:grid-cols-5 xl:grid-cols-5" : "lg:grid-cols-4 xl:grid-cols-4"} gap-2.5 sm:gap-4 mb-3 xl:mb-5`}>
+          <div className={`grid grid-cols-1 sm:grid-cols-2 ${canViewPreClicks ? "lg:grid-cols-3 xl:grid-cols-5" : "lg:grid-cols-4"} gap-3 sm:gap-4 mb-4 xl:mb-5`}>
             <Link to="/dashboard/analytics" className="w-full">
               <StatCard
                 icon={<ArrowUpRight size={16} className="text-green-600" />}
@@ -779,10 +783,11 @@ export default function Dashboard() {
               label="Returning Users"
               value={returningUsersPercentage}
               sub="Last 30 days"
+              className={canViewPreClicks ? "sm:col-span-2 lg:col-span-1" : ""}
             />
           </div>
 
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4">
             {/* Search */}
             <div className="relative flex-1">
               <Search
@@ -799,7 +804,7 @@ export default function Dashboard() {
             </div>
 
             {/* Filter Dropdown */}
-            <div className="relative w-40" ref={dropdownRef}>
+            <div className="relative w-full sm:w-40" ref={dropdownRef}>
               <button
                 type="button"
                 onClick={() => setOpen(!open)}
@@ -856,8 +861,26 @@ export default function Dashboard() {
                 </div>
               </div>
             ) : (
-              /* Scroll container — ONLY horizontal, no vertical scroll */
-              <div className="overflow-x-auto">
+              <>
+              {/* ── Mobile & tablet: compact list + detail sheet, no horizontal scroll ── */}
+              <MobileLinkList
+                className="lg:hidden"
+                links={filtered}
+                accountLabels={accountLabels}
+                copiedId={copied}
+                onCopy={handleCopy}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+                onShare={setShareLink}
+                onQr={setQrLink}
+                onAddToCampaign={setCampaignModalLink}
+                onLabelsChanged={fetchLinks}
+                refresh={() => setLinks((prev) => [...prev])}
+                emptyText="No links match your filters."
+              />
+
+              {/* ── Desktop: full table ── */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full" style={{ minWidth: "780px" }}>
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50">
@@ -1044,6 +1067,7 @@ export default function Dashboard() {
                   </tbody>
                 </table>
               </div>
+              </>
             )}
           </div>
 

@@ -168,7 +168,7 @@ function SectionBody({ paragraphs, bullets, outro }) {
   return (
     <div className="flex flex-col gap-4">
       {paragraphs?.map((text) => (
-        <p key={text} className="text-slate-600 text-[1rem] leading-[1.75]">
+        <p key={text} className="text-slate-600 text-[0.95rem] sm:text-base leading-[1.75] text-justify sm:text-left">
           {text}
         </p>
       ))}
@@ -176,7 +176,7 @@ function SectionBody({ paragraphs, bullets, outro }) {
       {bullets && (
         <ul className="flex flex-col gap-3 mt-1">
           {bullets.map((text) => (
-            <li key={text} className="flex items-start gap-2.5 text-[0.98rem] text-slate-600 leading-[1.65]">
+            <li key={text} className="flex items-start gap-2.5 text-[0.9rem] sm:text-[0.98rem] text-slate-600 leading-[1.65]">
               <BulletIcon /><span>{text}</span>
             </li>
           ))}
@@ -184,7 +184,7 @@ function SectionBody({ paragraphs, bullets, outro }) {
       )}
 
       {outro?.map((text) => (
-        <p key={text} className="text-slate-600 text-[1rem] leading-[1.75]">
+        <p key={text} className="text-slate-600 text-[0.95rem] sm:text-base leading-[1.75] text-justify sm:text-left">
           {text}
         </p>
       ))}
@@ -200,36 +200,36 @@ export default function PrivacyPolicy() {
     <>
       <Navbar />
 
-      <main id="main">
+      <main id="main" className="overflow-x-hidden">
         {/* ── HERO ───────────────────────────────────────────── */}
-        <section className="relative overflow-hidden pt-[152px] pb-[56px] text-center">
+        <section className="relative overflow-hidden pt-24 sm:pt-28 md:pt-36 pb-12 sm:pb-16 text-center">
           <div
-            className="pointer-events-none absolute left-1/2 top-[-160px] -translate-x-1/2 w-[760px] h-[520px] rounded-full opacity-[.16]"
+            className="pointer-events-none absolute left-1/2 top-[-160px] -translate-x-1/2 w-[520px] sm:w-[760px] h-[380px] sm:h-[520px] max-w-full rounded-full opacity-[.16]"
             style={{ background: "linear-gradient(120deg,#1E1B4B,#312E81 45%,#4F46E5)", filter: "blur(120px)" }}
           />
 
-          <div className="relative z-10 max-w-[1152px] mx-auto px-6">
-            <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3.5 py-[7px] text-[0.8rem] font-semibold text-indigo-600">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 block" />
+          <div className="relative z-10 max-w-[1152px] mx-auto px-5 sm:px-6">
+            <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3.5 sm:px-4 py-1.5 text-xs md:text-sm font-semibold text-indigo-600">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
               Legal
             </span>
 
-            <h1 className="mt-6 text-[clamp(2.4rem,5vw,3.6rem)] font-extrabold tracking-[-0.035em] text-slate-900 leading-[1.12] mb-4">
+            <h1 className="mt-5 sm:mt-6 text-[clamp(1.95rem,8vw,3.6rem)] font-extrabold tracking-[-0.035em] text-slate-900 leading-[1.12] mb-3 sm:mb-4">
               Privacy Policy
             </h1>
 
-            <p className="text-slate-400 text-[0.875rem]">
+            <p className="text-slate-400 text-[0.8rem] sm:text-[0.875rem]">
               Last updated: <time dateTime={LAST_UPDATED_ISO}>{LAST_UPDATED}</time>
             </p>
           </div>
         </section>
 
         {/* ── INTRO ──────────────────────────────────────────── */}
-        <section className="pb-16">
-          <div className="max-w-[1152px] mx-auto px-6">
-            <div className="max-w-[780px] mx-auto bg-white border border-slate-200 rounded-[16px] p-8 shadow-[0_1px_3px_rgba(0,0,0,.07)] flex flex-col gap-4">
+        <section className="pb-12 sm:pb-16">
+          <div className="max-w-[1152px] mx-auto px-5 sm:px-6">
+            <div className="max-w-[780px] mx-auto bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-[0_1px_3px_rgba(0,0,0,.07)] flex flex-col gap-4">
               {INTRO.map((text) => (
-                <p key={text} className="text-slate-600 text-[1rem] leading-[1.75]">
+                <p key={text} className="text-slate-600 text-[0.95rem] sm:text-base leading-[1.75] text-justify sm:text-left">
                   {text}
                 </p>
               ))}
@@ -238,9 +238,9 @@ export default function PrivacyPolicy() {
         </section>
 
         {/* ── CONTENTS ───────────────────────────────────────── */}
-        <section className="pb-16">
-          <div className="max-w-[1152px] mx-auto px-6">
-            <nav aria-label="Contents" className="max-w-[780px] mx-auto bg-white border border-slate-200 rounded-[16px] p-8 shadow-[0_1px_3px_rgba(0,0,0,.07)]">
+        <section className="pb-12 sm:pb-16">
+          <div className="max-w-[1152px] mx-auto px-5 sm:px-6">
+            <nav aria-label="Contents" className="max-w-[780px] mx-auto bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-[0_1px_3px_rgba(0,0,0,.07)]">
               <h2 className="text-[0.82rem] font-semibold text-slate-400 uppercase tracking-wide mb-4">
                 Contents
               </h2>
@@ -271,12 +271,12 @@ export default function PrivacyPolicy() {
         </section>
 
         {/* ── SECTIONS ───────────────────────────────────────── */}
-        <section className="pb-20">
-          <div className="max-w-[1152px] mx-auto px-6">
-            <div className="max-w-[780px] mx-auto flex flex-col gap-12">
+        <section className="pb-14 sm:pb-20">
+          <div className="max-w-[1152px] mx-auto px-5 sm:px-6">
+            <div className="max-w-[780px] mx-auto flex flex-col gap-10 sm:gap-12">
               {SECTIONS.map((section) => (
                 <article key={section.id} id={section.id} className="scroll-mt-[100px]">
-                  <h2 className="text-[1.45rem] font-extrabold text-slate-900 tracking-[-0.02em] mb-4">
+                  <h2 className="text-xl sm:text-[1.45rem] font-extrabold text-slate-900 tracking-[-0.02em] mb-3 sm:mb-4">
                     <span className="text-indigo-600">{section.number}.</span> {section.title}
                   </h2>
 
@@ -287,8 +287,8 @@ export default function PrivacyPolicy() {
                   />
 
                   {section.subsections?.map((sub) => (
-                    <div key={sub.title} className="mt-7">
-                      <h3 className="text-[1.05rem] font-bold text-slate-900 tracking-[-0.01em] mb-3">
+                    <div key={sub.title} className="mt-6 sm:mt-7">
+                      <h3 className="text-base sm:text-[1.05rem] font-bold text-slate-900 tracking-[-0.01em] mb-3">
                         {sub.title}
                       </h3>
                       <SectionBody
@@ -303,21 +303,21 @@ export default function PrivacyPolicy() {
 
               {/* 11. Contact Us */}
               <article id="contact-us" className="scroll-mt-[100px]">
-                <h2 className="text-[1.45rem] font-extrabold text-slate-900 tracking-[-0.02em] mb-4">
+                <h2 className="text-xl sm:text-[1.45rem] font-extrabold text-slate-900 tracking-[-0.02em] mb-3 sm:mb-4">
                   <span className="text-indigo-600">11.</span> Contact Us
                 </h2>
 
-                <p className="text-slate-600 text-[1rem] leading-[1.75] mb-6">
+                <p className="text-slate-600 text-[0.95rem] sm:text-base leading-[1.75] mb-5 sm:mb-6">
                   Questions about this policy or your data? Reach us at:
                 </p>
 
-                <dl className="bg-white border border-slate-200 rounded-[16px] shadow-[0_1px_3px_rgba(0,0,0,.07)] divide-y divide-slate-100">
+                <dl className="bg-white border border-slate-200 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,.07)] divide-y divide-slate-100">
                   {CONTACT_ROWS.map((row) => (
-                    <div key={row.label} className="flex flex-col sm:flex-row gap-1 sm:gap-6 px-7 py-5">
+                    <div key={row.label} className="flex flex-col sm:flex-row gap-1 sm:gap-6 px-5 sm:px-7 py-4 sm:py-5">
                       <dt className="text-[0.9rem] font-semibold text-slate-900 sm:w-[170px] shrink-0">
                         {row.label}
                       </dt>
-                      <dd className="text-[0.98rem] text-slate-600 leading-[1.6]">
+                      <dd className="text-[0.95rem] sm:text-[0.98rem] text-slate-600 leading-[1.6] break-words">
                         {row.href ? (
                           <a href={row.href} className="font-semibold text-indigo-600 hover:text-indigo-700">
                             {row.value}
@@ -332,7 +332,7 @@ export default function PrivacyPolicy() {
               </article>
             </div>
 
-            <p className="max-w-[780px] mx-auto text-center text-slate-500 text-[0.92rem] mt-14">
+            <p className="max-w-[780px] mx-auto text-center text-slate-500 text-[0.92rem] mt-10 sm:mt-14">
               See also our{" "}
               <Link to="/terms-of-service" className="font-semibold text-indigo-600 hover:text-indigo-700 underline underline-offset-2">
                 Terms of Service
