@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { isOwner } from "../ownerAccess";
 import { isSubscriptionExpired } from "../premiumAccess";
 import env from "../../Config/env";
+import PlanUpgradeModal from "./PlanUpgradeModal";
 import {
   Zap,
   BarChart2,
@@ -52,6 +53,7 @@ export default function Sidebar({
   // still loading. `null` means "not known yet" and renders nothing, which is
   // why a lapsed subscriber no longer sees "Free Plan" flash first.
   const [plan, setPlan] = useState(null);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const planLinkLimit = plan?.freeLinkLimit ?? FREE_LIMIT;
   const planCampaignLimit = plan?.freeCampaignLimit ?? 1;
   // Prefer the page's live link count (it updates as links are added/removed)
@@ -204,13 +206,13 @@ export default function Sidebar({
               <div className="text-xs text-amber-700/90 mb-3 leading-[1.5]">
                 Subscribe again to create more links and campaigns.
               </div>
-              <Link
-                to="/pricing"
-                onClick={() => setSidebarOpen(false)}
+              <button
+                type="button"
+                onClick={() => setUpgradeModalOpen(true)}
                 className="flex items-center justify-center w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
               >
                 Subscribe Again
-              </Link>
+              </button>
             </div>
           ) : (
             <div className="border border-indigo-100 bg-indigo-50 rounded-xl p-4 my-3">
@@ -240,13 +242,13 @@ export default function Sidebar({
 
               {/* Both quotas spent — the only way forward is to upgrade. */}
               {usedLinks >= planLinkLimit && usedCampaigns >= planCampaignLimit && (
-                <Link
-                  to="/pricing"
-                  onClick={() => setSidebarOpen(false)}
+                <button
+                  type="button"
+                  onClick={() => setUpgradeModalOpen(true)}
                   className="mt-3 flex items-center justify-center w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
                 >
                   Upgrade to Plus
-                </Link>
+                </button>
               )}
             </div>
           )
@@ -291,6 +293,11 @@ export default function Sidebar({
           </div>
         </div>
       </aside>
+
+      <PlanUpgradeModal
+        open={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+      />
     </>
   );
 }

@@ -44,6 +44,7 @@ import {
   FREE_LINK_LIMIT,
 } from "../premiumAccess";
 import AddToCampaignModal from "../components/AddToCampaignModal";
+import PlanUpgradeModal from "../components/PlanUpgradeModal";
 import MobileLinkList from "../components/MobileLinkList";
 import useSocket from "../socket/useSocket";
 import env from "../../Config/env";
@@ -123,7 +124,7 @@ function DeleteModal({ onConfirm, onCancel, deleting }) {
 }
 
 /** `expired` swaps the copy for someone whose subscription has lapsed. */
-function LimitModal({ onClose, expired = false }) {
+function LimitModal({ onClose, onUpgrade, expired = false }) {
   return (
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
@@ -145,12 +146,13 @@ function LimitModal({ onClose, expired = false }) {
             : `Free includes ${FREE_LINK_LIMIT} tracked link. Upgrade to Plus to create unlimited tracked links.`}
         </p>
         <div className="flex flex-col gap-2">
-          <Link
-            to="/pricing"
-            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors text-center"
+          <button
+            type="button"
+            onClick={onUpgrade}
+            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors text-center cursor-pointer"
           >
             {expired ? "Subscribe Again" : "View Plans"}
-          </Link>
+          </button>
           <button
             onClick={onClose}
             className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-colors cursor-pointer"
@@ -219,6 +221,7 @@ export default function Dashboard() {
   const [deleteModal, setDeleteModal] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false);
   const [campaignModalLink, setCampaignModalLink] = useState(null);
 
   const totalClicks = links.reduce((sum, l) => sum + l.clicks, 0);
@@ -512,8 +515,16 @@ export default function Dashboard() {
         />
       )}
       {showLimitModal && (
-        <LimitModal expired={subscriptionExpired} onClose={() => setShowLimitModal(false)} />
+        <LimitModal
+          expired={subscriptionExpired}
+          onClose={() => setShowLimitModal(false)}
+          onUpgrade={() => {
+            setShowLimitModal(false);
+            setShowPlanModal(true);
+          }}
+        />
       )}
+      <PlanUpgradeModal open={showPlanModal} onClose={() => setShowPlanModal(false)} />
       {campaignModalLink && (
         <AddToCampaignModal
           link={campaignModalLink}

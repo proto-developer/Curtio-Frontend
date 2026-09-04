@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
+import env from "../../Config/env";
+import { isSubscriptionExpired } from "../premiumAccess";
 
 /* ─────────────────────────────────────────────────────────────
    PLAN CONTENT — single source of truth for this page.
@@ -173,6 +175,38 @@ function TableCell({ val, plus }) {
 export default function Pricing() {
   const [openFaq, setOpenFaq] = useState(0);
 
+  const apiToken = localStorage.getItem("apiToken");
+  const isLoggedIn = !!apiToken;
+
+  // `null` until the plan endpoint answers, so a Plus subscriber never
+  // flashes the "Coming soon" badge as their own current plan.
+  const [plan, setPlan] = useState(null);
+  const planLoaded = !isLoggedIn || plan !== null;
+
+  useEffect(() => {
+    if (!apiToken) return;
+
+    let cancelled = false;
+    fetch(`${env.BACKEND_URL}/plan`, {
+      headers: { Authorization: `Bearer ${apiToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data?.success) setPlan(data);
+      })
+      .catch(() => {
+        /* Leave the plan unknown rather than guessing. */
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiToken]);
+
+  const isPlusActive =
+    planLoaded && !!plan?.unlimitedLinks && !isSubscriptionExpired(plan.subscriptionStatus);
+  const isFreeCurrent = isLoggedIn && planLoaded && !isPlusActive;
+
   return (
     <>
       <Navbar />
@@ -211,9 +245,24 @@ export default function Pricing() {
           <div className="max-w-[1152px] mx-auto px-5 sm:px-6">
             <div className="grid md:grid-cols-2 gap-5 sm:gap-6 items-stretch max-w-[1080px] mx-auto">
 
-              {/* Free — the prominent card: it is the plan you can actually buy today. */}
-              <article className="relative bg-white border-2 border-indigo-500 rounded-2xl p-6 sm:p-8 shadow-[0_24px_60px_-18px_rgba(79,70,229,0.4)] flex flex-col transition-all hover:shadow-[0_32px_70px_-18px_rgba(79,70,229,0.45)] hover:-translate-y-1">
-                <h2 className="font-bold text-lg sm:text-[1.2rem] text-slate-900 tracking-[-0.01em]">Free</h2>
+              {/* Free — highlighted by default (it's the plan you can actually buy
+                  today), unless the signed-in user is an active Plus subscriber,
+                  in which case the highlight moves to their real current plan. */}
+              <article
+                className={`relative bg-white rounded-2xl p-6 sm:p-8 flex flex-col transition-all hover:-translate-y-1 ${
+                  isPlusActive
+                    ? "border border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,.07)] hover:shadow-[0_16px_38px_-10px_rgba(15,23,42,.20)]"
+                    : "border-2 border-indigo-500 shadow-[0_24px_60px_-18px_rgba(79,70,229,0.4)] hover:shadow-[0_32px_70px_-18px_rgba(79,70,229,0.45)]"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="font-bold text-lg sm:text-[1.2rem] text-slate-900 tracking-[-0.01em]">Free</h2>
+                  {isFreeCurrent && (
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap bg-indigo-50 text-indigo-700 text-[0.72rem] font-bold tracking-[0.02em] px-3 py-[5px] rounded-full">
+                      Current Plan
+                    </span>
+                  )}
+                </div>
 
                 <div className="flex items-baseline gap-1.5 mt-4 sm:mt-5 mb-3 sm:mb-4 flex-wrap">
                   <span className="text-4xl sm:text-[2.7rem] font-extrabold tracking-[-0.035em] text-slate-900 leading-none">$0</span>
@@ -234,21 +283,43 @@ export default function Pricing() {
                   ))}
                 </ul>
 
-                <Link
-                  to="/register"
-                  className="mt-7 sm:mt-8 w-full flex items-center justify-center px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold text-[0.95rem] sm:text-[0.975rem] hover:bg-indigo-700 hover:-translate-y-px transition-all shadow-[0_1px_3px_rgba(0,0,0,.07)]"
-                >
-                  Get Started Free
-                </Link>
+                {!isLoggedIn ? (
+                  <Link
+                    to="/register"
+                    className="mt-7 sm:mt-8 w-full flex items-center justify-center px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold text-[0.95rem] sm:text-[0.975rem] hover:bg-indigo-700 hover:-translate-y-px transition-all shadow-[0_1px_3px_rgba(0,0,0,.07)]"
+                  >
+                    Get Started Free
+                  </Link>
+                ) : isFreeCurrent ? (
+                  <Link
+                    to="/dashboard"
+                    className="mt-7 sm:mt-8 w-full flex items-center justify-center px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold text-[0.95rem] sm:text-[0.975rem] hover:bg-indigo-700 hover:-translate-y-px transition-all shadow-[0_1px_3px_rgba(0,0,0,.07)]"
+                  >
+                    Continue to Dashboard
+                  </Link>
+                ) : null}
               </article>
 
-              {/* Plus — deliberately understated while checkout is unavailable. */}
-              <article className="relative bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-[0_1px_3px_rgba(0,0,0,.07)] flex flex-col transition-all hover:shadow-[0_16px_38px_-10px_rgba(15,23,42,.20)]">
+              {/* Plus — deliberately understated while checkout is unavailable,
+                  but highlighted like Free once the user is actually subscribed. */}
+              <article
+                className={`relative bg-white rounded-2xl p-6 sm:p-8 flex flex-col transition-all hover:-translate-y-1 ${
+                  isPlusActive
+                    ? "border-2 border-indigo-500 shadow-[0_24px_60px_-18px_rgba(79,70,229,0.4)] hover:shadow-[0_32px_70px_-18px_rgba(79,70,229,0.45)]"
+                    : "border border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,.07)] hover:shadow-[0_16px_38px_-10px_rgba(15,23,42,.20)]"
+                }`}
+              >
                 <div className="flex items-center justify-between gap-3">
                   <h2 className="font-bold text-lg sm:text-[1.2rem] text-slate-900 tracking-[-0.01em]">Plus</h2>
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap bg-amber-50 text-amber-700 text-[0.72rem] font-bold tracking-[0.02em] px-3 py-[5px] rounded-full">
-                    Coming soon
-                  </span>
+                  {isPlusActive ? (
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap bg-indigo-50 text-indigo-700 text-[0.72rem] font-bold tracking-[0.02em] px-3 py-[5px] rounded-full">
+                      Current Plan
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap bg-amber-50 text-amber-700 text-[0.72rem] font-bold tracking-[0.02em] px-3 py-[5px] rounded-full">
+                      Coming soon
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-baseline gap-1.5 mt-4 sm:mt-5 mb-3 sm:mb-4 flex-wrap">
@@ -271,14 +342,23 @@ export default function Pricing() {
                   ))}
                 </ul>
 
-                <button
-                  type="button"
-                  disabled
-                  aria-disabled="true"
-                  className="mt-7 sm:mt-8 w-full flex items-center justify-center text-center px-5 py-3 rounded-xl bg-slate-100 text-slate-500 font-semibold text-[0.95rem] sm:text-[0.975rem] border border-slate-200 cursor-not-allowed"
-                >
-                  {PLUS_CTA}
-                </button>
+                {isPlusActive ? (
+                  <Link
+                    to="/dashboard"
+                    className="mt-7 sm:mt-8 w-full flex items-center justify-center px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold text-[0.95rem] sm:text-[0.975rem] hover:bg-indigo-700 hover:-translate-y-px transition-all shadow-[0_1px_3px_rgba(0,0,0,.07)]"
+                  >
+                    Continue to Dashboard
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    aria-disabled="true"
+                    className="mt-7 sm:mt-8 w-full flex items-center justify-center text-center px-5 py-3 rounded-xl bg-slate-100 text-slate-500 font-semibold text-[0.95rem] sm:text-[0.975rem] border border-slate-200 cursor-not-allowed"
+                  >
+                    {PLUS_CTA}
+                  </button>
+                )}
               </article>
             </div>
           </div>
