@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 import CTASection from "../components/cta";
-import { SlidersHorizontal } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────────
    SVG ICONS  (raw inline SVGs matching the curtio template)
@@ -95,6 +93,8 @@ const BLOCKS = [
     control: "The slug, the destination, and whether the link is tracked.",
     visualType: "default",
     mockupImage: "/Mockup1.png",
+    mockupWidth: 1200,
+    mockupHeight: 695,
   },
   {
     flip: true, emphasis: true, highlight: true,
@@ -107,6 +107,8 @@ const BLOCKS = [
     control: "Nothing to set up. Accurate counting is on by default.",
     visualType: "analytics",
     mockupImage: "/Mockup2.png",
+    mockupWidth: 1200,
+    mockupHeight: 691,
   },
   {
     flip: false, emphasis: false, highlight: false,
@@ -119,6 +121,8 @@ const BLOCKS = [
     control: "Download format and size.",
     visualType: "default",
     mockupImage: "/Mockup3.png",
+    mockupWidth: 1200,
+    mockupHeight: 783,
   },
   {
     flip: true, emphasis: false, highlight: false,
@@ -131,6 +135,8 @@ const BLOCKS = [
     control: "The back-half of every link.",
     visualType: "default",
     mockupImage: "/Mockup4.png",
+    mockupWidth: 521,
+    mockupHeight: 302,
   },
   {
     flip: false, emphasis: false, highlight: false,
@@ -143,6 +149,8 @@ const BLOCKS = [
     control: "Source, medium, campaign, term, and content.",
     visualType: "default",
     mockupImage: "/Mockup5.png",
+    mockupWidth: 1200,
+    mockupHeight: 772,
   },
   {
     flip: true, emphasis: false, highlight: false,
@@ -155,6 +163,8 @@ const BLOCKS = [
     control: "The password, which you can change anytime.",
     visualType: "default",
     mockupImage: "/Mockup6.png",
+    mockupWidth: 1200,
+    mockupHeight: 691,
   },
   {
     flip: false, emphasis: false, highlight: false,
@@ -167,6 +177,8 @@ const BLOCKS = [
     control: "The expiry date and what happens after.",
     visualType: "default",
     mockupImage: "/Mockup7.png",
+    mockupWidth: 1200,
+    mockupHeight: 691,
   },
   {
     flip: true, emphasis: false, highlight: false,
@@ -179,6 +191,8 @@ const BLOCKS = [
     control: "Nothing. It is there the moment your link gets clicks.",
     visualType: "default",
     mockupImage: "/Mockup8.png",
+    mockupWidth: 521,
+    mockupHeight: 300,
   },
   {
     flip: false, emphasis: false, highlight: false,
@@ -191,6 +205,8 @@ const BLOCKS = [
     control: "Nothing to set up. Referrers are tracked for you.",
     visualType: "default",
     mockupImage: "/Mockup9.png",
+    mockupWidth: 1200,
+    mockupHeight: 691,
   },
   {
     flip: true, emphasis: false, highlight: false,
@@ -203,14 +219,16 @@ const BLOCKS = [
     control: "Whether to stay a guest or go free.",
     visualType: "default",
     mockupImage: "/Mockup10.png",
+    mockupWidth: 1200,
+    mockupHeight: 855,
   },
 ];
 
 /* ─────────────────────────────────────────────────────────────
    INLINE BROWSER-MOCKUP CARD
 ───────────────────────────────────────────────────────────── */
-function VisualCard({ block }) {
-  const { Icon, tone, browserUrl, caption, emphasis, highlight, visualType, mockupImage } = block;
+function VisualCard({ block, priority = false }) {
+  const { Icon, tone, browserUrl, caption, emphasis, highlight, visualType, mockupImage, mockupWidth, mockupHeight } = block;
 
   const stageStyle = emphasis
     ? { background: "repeating-linear-gradient(45deg,rgba(79,70,229,.05) 0 12px,transparent 12px 24px),linear-gradient(135deg,#EEF2FF,#fff)" }
@@ -261,7 +279,19 @@ function VisualCard({ block }) {
         </span>
 
         {mockupImage ? (
-          <img src={mockupImage} alt="Mockup" className="relative z-10 block w-full h-auto" />
+          <picture>
+            <source srcSet={mockupImage.replace(/\.png$/i, ".webp")} type="image/webp" />
+            <img
+              src={mockupImage}
+              alt=""
+              width={mockupWidth}
+              height={mockupHeight}
+              className="relative z-10 block w-full h-auto"
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "low"}
+              decoding="async"
+            />
+          </picture>
         ) : visualType === "analytics" ? (
           <div className="relative z-10 flex flex-col gap-3 w-full max-w-[300px]">
             {[
@@ -301,41 +331,6 @@ function VisualCard({ block }) {
    MAIN PAGE
 ───────────────────────────────────────────────────────────── */
 export default function Features() {
-  const [imagesLoaded, setImagesLoaded] = useState(false);
-
-  useEffect(() => {
-    const imagesToLoad = BLOCKS.map(b => b.mockupImage).filter(Boolean);
-    if (imagesToLoad.length === 0) {
-      setImagesLoaded(true);
-      return;
-    }
-
-    let loadedCount = 0;
-    imagesToLoad.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-      img.onload = img.onerror = () => {
-        loadedCount++;
-        if (loadedCount === imagesToLoad.length) {
-          setImagesLoaded(true);
-        }
-      };
-    });
-  }, []);
-
-  if (!imagesLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="py-16 text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent mb-3" />
-          <div className="text-slate-500 text-sm font-medium">
-            Loading features...
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <Navbar />
@@ -397,7 +392,7 @@ export default function Features() {
                   }`}
               >
                 {/* Visual */}
-                <VisualCard block={block} />
+                <VisualCard block={block} priority={i === 0} />
 
                 {/* Text */}
                 <div>
