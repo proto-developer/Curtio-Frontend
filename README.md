@@ -1,16 +1,71 @@
-# React + Vite
+# Curtio Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for **[Curtio](https://curtio.io)** — a URL shortener with click analytics, campaigns, QR codes, and Sanity-powered blog content.
 
-Currently, two official plugins are available:
+Companion API: [`Curtio-Backend`](../Curtio-Backend) (default `http://localhost:6090`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- React 19 + Vite 8
+- React Router 7
+- Tailwind CSS 4
+- Socket.IO client (live updates)
+- Sanity (blog)
+- Recharts, Vitest, Playwright
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Quick start
 
-## Expanding the ESLint configuration
+```bash
+npm install
+cp .env.example .env   # fill in values (see Environment)
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project...
+App: [http://localhost:5173](http://localhost:5173)
+
+Run the backend separately (port **6090**) so `VITE_API_BASE_URL` resolves.
+
+## Environment
+
+| Variable | Purpose |
+|----------|---------|
+| `VITE_API_BASE_URL` | Backend API root (e.g. `http://localhost:6090/api`) |
+| `VITE_REDIRECT_URI` | Short-link / redirect base (e.g. `http://localhost:6090`) |
+| `VITE_CLIENT_ID` | Google OAuth client ID |
+| `VITE_SANITY_PROJECT_ID` | Sanity project |
+| `VITE_SANITY_DATASET` | Sanity dataset (e.g. `production`) |
+| `VITE_SANITY_API_VERSION` | Sanity API version |
+| `VITE_SANITY_API_TOKEN` | Sanity token (if needed for private reads) |
+| `VITE_SITE_URL` | Canonical site URL for SEO (optional) |
+| `VITE_GOOGLE_API_KEY` | Google API key (optional) |
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Vite dev server |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest (unit) |
+| `npm run test:watch` | Vitest watch mode |
+| `npm run test:e2e` | Playwright e2e |
+
+## Project structure
+
+```
+src/
+  api/          # HTTP clients (auth, urls, plan, public)
+  components/   # Shared UI
+  config/       # Env + shortener config
+  features/     # Route-level modules (auth, links, analytics, …)
+  lib/          # Session, sync, Sanity, helpers
+  seo/          # Meta / SEO helpers
+  socket/       # Socket.IO provider
+```
+
+Path alias: `@/*` → `src/*` (see `jsconfig.json` + Vite `resolve.alias`).
+
+## Docs
+
+- [`docs/DEVELOPER_DOCS.md`](docs/DEVELOPER_DOCS.md) — product and architecture notes

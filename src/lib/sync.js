@@ -1,6 +1,6 @@
 import { getCookie, eraseCookie } from './cookies';
-import env from '../../Config/env';
 import { addNewLinkId } from './newLinkTracker';
+import { createUrl } from '@/api/urls';
 
 export async function syncPendingUrl(apiToken) {
   const pendingUrl = getCookie('brevly_pending_url') || localStorage.getItem('pending_url');
@@ -16,17 +16,7 @@ export async function syncPendingUrl(apiToken) {
 
   if (pendingUrl) {
     try {
-      const res = await fetch(`${env.BACKEND_URL}/urls`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiToken}`
-        },
-        body: JSON.stringify({
-          originalUrl: pendingUrl
-        })
-      });
-      const data = await res.json();
+      const data = await createUrl({ originalUrl: pendingUrl }, { token: apiToken });
       if (data.success) {
         console.log("Successfully synced pending URL to DB:", data);
         if (data.url?._id) {

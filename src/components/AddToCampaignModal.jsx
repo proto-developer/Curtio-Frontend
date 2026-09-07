@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus, Target, X, Check, FolderOpen, Pencil } from "lucide-react";
-import env from "../../Config/env";
+import { updateUrlCampaigns, renameCampaign } from "@/api/urls";
 
 /**
  * AddToCampaignModal — Reusable modal to assign a link to one or more campaigns.
@@ -145,17 +145,8 @@ export default function AddToCampaignModal({
       return;
     }
 
-    const apiBase = env.BACKEND_URL;
     try {
-      const res = await fetch(`${apiBase}/urls/campaign/${encodeURIComponent(oldName)}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newName: freshName }),
-      });
-      const data = await res.json();
+      const data = await renameCampaign(oldName, freshName, { token });
       if (data.success) {
         setLocalCampaigns((prev) =>
           prev.map((c) => (c.name === oldName ? { ...c, name: freshName } : c))
@@ -185,8 +176,6 @@ export default function AddToCampaignModal({
     setSaving(true);
     setError("");
 
-    const apiBase = env.BACKEND_URL;
-    // Build {name, source, medium} array from the selected map
     const campaignsList = Array.from(selected.entries()).map(([name, details]) => ({
       name,
       source: details.source || "",
@@ -194,15 +183,7 @@ export default function AddToCampaignModal({
     }));
 
     try {
-      const res = await fetch(`${apiBase}/urls/${link.slug}/campaigns`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ campaigns: campaignsList }),
-      });
-      const data = await res.json();
+      const data = await updateUrlCampaigns(link.slug, campaignsList, { token });
       if (data.success) {
         setSaved(true);
         setTimeout(() => {

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { isLoggedIn as hasActiveSession } from "../lib/session";
+import { isLoggedIn as hasActiveSession } from "@/lib/auth/session";
+import { isOwner } from "@/lib/auth/owner";
 
 export default function Navbar() {
   const location = useLocation();
@@ -33,12 +35,14 @@ export default function Navbar() {
   const isLoggedIn = hasActiveSession();
   const userInitial = storedUser?.name?.charAt(0).toUpperCase() || "";
 
+  // Owners are never billed and /pricing redirects them to the dashboard, so
+  // the tab is just a dead end for them — hide it.
   const navItems = [
     { to: "/features", label: "Features" },
     { to: "/pricing", label: "Pricing" },
     { to: "/accuracy", label: "Accuracy" },
     { to: "/blog", label: "Blog" },
-  ];
+  ].filter((item) => item.to !== "/pricing" || !isOwner());
 
   const isActive = (path) => {
     if (path.startsWith("/#")) {

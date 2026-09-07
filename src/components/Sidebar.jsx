@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { isOwner } from "../ownerAccess";
-import { isSubscriptionExpired } from "../premiumAccess";
-import env from "../../Config/env";
+import { isOwner } from "@/lib/auth/owner";
+import { isSubscriptionExpired } from "@/lib/auth/premium";
+import { getPlan } from "@/api/plan";
 import PlanUpgradeModal from "./PlanUpgradeModal";
 import {
   Zap,
@@ -68,10 +68,7 @@ export default function Sidebar({
     if (!apiToken || isAdmin) return;
 
     let cancelled = false;
-    fetch(`${env.BACKEND_URL}/plan`, {
-      headers: { Authorization: `Bearer ${apiToken}` },
-    })
-      .then((res) => res.json())
+    getPlan({ token: apiToken })
       .then((data) => {
         if (!cancelled && data?.success) setPlan(data);
       })
