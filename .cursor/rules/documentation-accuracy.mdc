@@ -1,0 +1,13 @@
+---
+description: Keep docs accurate; do not treat DEVELOPER_DOCS.md as source of truth over code
+globs: "**/*.{md,docx}"
+alwaysApply: false
+---
+
+# Documentation
+
+- Code and tests are the source of truth. `docs/DEVELOPER_DOCS.md` is partly outdated (Postgres/Redis, `/api/links`, Brevly branding).
+- When docs and code disagree, follow code unless the user asked to change the contract.
+- Do not create new markdown files unless the user asked.
+- Verify paths, script names, env vars, and routes before documenting them.
+- Live API shape is `{ success, message, ... }` with routes under `/api/auth` and `/api/urls` — not the `/api/links` contract in the stale doc.

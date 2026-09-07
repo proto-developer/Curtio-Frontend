@@ -1,0 +1,23 @@
+---
+description: Core coding standards and production-ready bar for Curtio Frontend
+alwaysApply: false
+---
+# Project standards
+
+- Follow existing repo conventions before introducing new patterns or libraries.
+- This repo is JavaScript (JSX). Do not convert files to TypeScript unless the user explicitly asks.
+- Prefer small, reusable functions over duplication. Prefer composition over inheritance.
+- Use async/await. Do not swallow errors.
+- Do not remove or skip existing tests to make a change pass.
+- Never expose secrets or commit `.env` files.
+- Never push directly to `main` or `prod`. Day-to-day: branch → PR into `main` (staging). Production is a separate PR into `prod` only when explicitly requested — do not casually merge `main` → `prod`.
+- Keep user-facing product name **Curtio**. Do not reintroduce Brevly, Bravely, or brev.ly in UI copy or new docs.
+
+## Production-ready bar
+
+Before considering a task complete:
+
+- Verify the actual requirement against running code, not only `docs/DEVELOPER_DOCS.md` (that doc is partly stale).
+- Check edge cases and negative paths.
+- Recommend or add tests if the change is untested.
+- Call out security or performance risks.
