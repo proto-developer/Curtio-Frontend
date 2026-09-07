@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Footer from "../components/footer";
+
 import env from "../../Config/env";
 import { isSubscriptionExpired } from "../premiumAccess";
+import { isOwner } from "../ownerAccess";
 
 /* ─────────────────────────────────────────────────────────────
    PLAN CONTENT — single source of truth for this page.
@@ -174,6 +174,10 @@ function TableCell({ val, plus }) {
 ───────────────────────────────────────────────────────────── */
 export default function Pricing() {
   const [openFaq, setOpenFaq] = useState(0);
+
+  // Owners run the tool and are never billed — they have no reason to see
+  // pricing, so a direct visit to /pricing sends them to their dashboard.
+  if (isOwner()) return <Navigate to="/dashboard" replace />;
 
   const apiToken = localStorage.getItem("apiToken");
   const isLoggedIn = !!apiToken;
