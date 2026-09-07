@@ -206,6 +206,7 @@ export default function Dashboard() {
   const [utmCampaign, setUtmCampaign] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [urlError, setUrlError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [copied, setCopied] = useState(null);
   const [search, setSearch] = useState("");
@@ -410,6 +411,26 @@ export default function Dashboard() {
     }
   }
 
+  function isValidUrl(str) {
+    try {
+      const parsed = new URL(str);
+      return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch {
+      return false;
+    }
+  }
+
+  function validateDestinationUrl(value) {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return "Destination URL is required.";
+    }
+    if (!isValidUrl(trimmed)) {
+      return "Enter a valid URL including https://";
+    }
+    return "";
+  }
+
   function buildFinalUrl(base) {
     const params = [];
     if (utmSource) params.push(`utm_source=${encodeURIComponent(utmSource)}`);
@@ -423,10 +444,18 @@ export default function Dashboard() {
   async function handleCreate(e) {
     e.preventDefault();
     if (atLimit) return;
+
+    const destinationError = validateDestinationUrl(url);
+    if (destinationError) {
+      setUrlError(destinationError);
+      return;
+    }
+
     setCreating(true);
     setError("");
+    setUrlError("");
     try {
-      const finalUrl = buildFinalUrl(url);
+      const finalUrl = buildFinalUrl(url.trim());
       const data = await createUrl({
         originalUrl: finalUrl,
         customAlias: alias ? alias.toLowerCase().trim() : undefined,
@@ -586,19 +615,33 @@ export default function Dashboard() {
           {showForm && !atLimit && (
             <div className="bg-white border border-slate-200 rounded-2xl p-3 md:p-4 sm:p-6 mb-2 md:mb-5 shadow-sm">
               <h2 className="font-bold text-slate-900 mb-2 md:mb-4">Create Your Tracked Link</h2>
-              <form onSubmit={handleCreate} className="space-y-3">
+              <form onSubmit={handleCreate} noValidate className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-0.5 md:mb-1">
                     Destination URL *
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    required
+                    onChange={(e) => {
+                      setUrl(e.target.value);
+                      if (urlError) setUrlError("");
+                    }}
                     placeholder="https://your-long-url.com/..."
-                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-invalid={urlError ? "true" : undefined}
+                    aria-describedby={urlError ? "destination-url-error" : undefined}
+                    className={`w-full border rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent ${
+                      urlError
+                        ? "border-red-300 focus:ring-red-500"
+                        : "border-slate-200 focus:ring-indigo-500"
+                    }`}
                   />
+                  {urlError && (
+                    <p id="destination-url-error" className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                      <AlertCircle size={13} className="shrink-0" />
+                      {urlError}
+                    </p>
+                  )}
                 </div>
 
                 <div>

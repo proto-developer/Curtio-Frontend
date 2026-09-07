@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import OwnerRoute from "./components/OwnerRoute";
 import { RouteSeo } from "./components/Seo";
@@ -50,12 +50,29 @@ function ScrollToTop() {
   return null;
 }
 
-export default function App() {
+function AuthenticatedShell() {
   return (
-    <BrowserRouter>
-      <RouteSeo />
-      <ScrollToTop />
-      <Suspense fallback={<RouteFallback />}>
+    <SocketProvider>
+      <Outlet />
+    </SocketProvider>
+  );
+}
+
+function AppRoutes() {
+  const { pathname } = useLocation();
+  const [displayPath, setDisplayPath] = useState(pathname);
+  const isTransitioning = displayPath !== pathname;
+
+  useLayoutEffect(() => {
+    setDisplayPath(pathname);
+  }, [pathname]);
+
+  if (isTransitioning) {
+    return <RouteFallback />;
+  }
+
+  return (
+    <Suspense key={pathname} fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -74,9 +91,7 @@ export default function App() {
         <Route
           element={
             <ProtectedRoute>
-              <SocketProvider>
-                <Outlet />
-              </SocketProvider>
+              <AuthenticatedShell />
             </ProtectedRoute>
           }
         >
@@ -100,7 +115,16 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-      </Suspense>
+    </Suspense>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <RouteSeo />
+      <ScrollToTop />
+      <AppRoutes />
     </BrowserRouter>
   );
 }
