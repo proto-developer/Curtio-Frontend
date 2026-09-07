@@ -4,26 +4,26 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import OwnerRoute from "./components/OwnerRoute";
 import { RouteSeo } from "./components/Seo";
 
-const Landing = lazy(() => import("./pages/Landing"));
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Analytics = lazy(() => import("./pages/Analytics"));
-const AnalytcsDashboard = lazy(() => import("./pages/AnalytcsDashboard"));
-const Campaigns = lazy(() => import("./pages/Campaigns"));
-const Blog = lazy(() => import("./pages/Blog"));
-const BlogPost = lazy(() => import("./pages/BlogPost"));
-const Profile = lazy(() => import("./pages/Profile"));
-const ForgotPassword = lazy(() => import("./pages/Fpassword"));
-const Accuracy = lazy(() => import("./pages/Accuracy"));
-const Features = lazy(() => import("./pages/feature"));
-const Pricing = lazy(() => import("./pages/Pricing"));
-const TermsOfService = lazy(() => import("./pages/TermsOfService"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
-const ShippingPolicy = lazy(() => import("./pages/ShippingPolicy"));
-const PasswordProtected = lazy(() => import("./pages/PasswordProtected"));
-const PreClick = lazy(() => import("./pages/PreClick"));
+const Landing = lazy(() => import("./features/marketing/Landing"));
+const Login = lazy(() => import("./features/auth/Login"));
+const Register = lazy(() => import("./features/auth/Register"));
+const Dashboard = lazy(() => import("./features/links/Dashboard"));
+const Analytics = lazy(() => import("./features/analytics/Analytics"));
+const AnalyticsDashboard = lazy(() => import("./features/analytics/AnalyticsDashboard"));
+const Campaigns = lazy(() => import("./features/campaigns/Campaigns"));
+const Blog = lazy(() => import("./features/blog/Blog"));
+const BlogPost = lazy(() => import("./features/blog/BlogPost"));
+const Profile = lazy(() => import("./features/links/Profile"));
+const ForgotPassword = lazy(() => import("./features/auth/ForgotPassword"));
+const Accuracy = lazy(() => import("./features/marketing/Accuracy"));
+const Features = lazy(() => import("./features/marketing/Features"));
+const Pricing = lazy(() => import("./features/marketing/Pricing"));
+const TermsOfService = lazy(() => import("./features/marketing/TermsOfService"));
+const PrivacyPolicy = lazy(() => import("./features/marketing/PrivacyPolicy"));
+const RefundPolicy = lazy(() => import("./features/marketing/RefundPolicy"));
+const ShippingPolicy = lazy(() => import("./features/marketing/ShippingPolicy"));
+const PasswordProtected = lazy(() => import("./features/public/PasswordProtected"));
+const PreClick = lazy(() => import("./features/analytics/PreClick"));
 const SocketProvider = lazy(() => import("./socket/SocketProvider"));
 
 function RouteFallback() {
@@ -82,7 +82,7 @@ export default function App() {
         >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/editprofile" element={<Profile />} />
-          <Route path="/dashboard/analytics" element={<AnalytcsDashboard />} />
+          <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
           <Route
             path="/dashboard/preclick"
             element={
