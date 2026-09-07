@@ -1,0 +1,19 @@
+---
+description: Vitest unit tests and Playwright e2e for Curtio Frontend
+globs: "{src/**/*.test.*,src/test/**,e2e/**,playwright.config.js,vite.config.js}"
+alwaysApply: false
+---
+
+# Frontend testing
+
+- Unit/component tests: Vitest + Testing Library. Setup is `src/test/setup.js`.
+- Colocate tests next to features (e.g. `src/features/auth/Login.test.jsx`, `src/seo/seo.test.js`). Prefer that over a flat `src/test/components/` tree.
+- E2E: Playwright in `e2e/`, `baseURL` `http://localhost:5173`, `npm run test:e2e`.
+- Do not remove existing tests. Extend them.
+- Cover the behavior you changed, plus the obvious failure path (validation error, unauthenticated redirect).
+- Do not hit production APIs from unit tests. Mock `fetch` / env.
+
+```javascript
+// ❌ BAD — deleting a failing test to ship
+// ✅ GOOD — extend src/features/auth/Login.test.jsx with the new case
+```
