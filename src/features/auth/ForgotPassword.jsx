@@ -9,7 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import { sendResetOtp, resetPassword } from "@/api/auth";
+import { sendResetOtp, resetPassword as resetPasswordApi } from "@/api/auth";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ export default function ForgotPassword() {
     }
   }
 
-  async function resetPassword(e) {
+  async function handleResetPassword(e) {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -62,7 +62,7 @@ export default function ForgotPassword() {
     setSuccess("");
 
     try {
-      const data = await resetPassword({ email, otp, password });
+      const data = await resetPasswordApi({ email, otp, password });
 
       if (!data.success) {
         setError(data.message);
@@ -206,7 +206,7 @@ export default function ForgotPassword() {
 
           {/* STEP 2 */}
           {step === 2 && (
-            <form onSubmit={resetPassword} className="space-y-4">
+            <form onSubmit={handleResetPassword} className="space-y-4">
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
