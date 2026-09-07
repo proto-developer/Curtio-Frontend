@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { isOwner } from "@/lib/auth/owner";
 
 const Footer = () => {
+  // Owners are never billed and /pricing redirects them away, so drop the link.
+  const showPricing = !isOwner();
+
   return (
     <footer className="border-t border-slate-200 bg-white py-12 sm:py-16">
       <div className="mx-auto max-w-[1152px] px-5 sm:px-6">
@@ -72,9 +76,11 @@ const Footer = () => {
                 Shipping &amp; Service Policy
               </Link>
 
-              <Link to="/pricing" className="block text-slate-600 transition hover:text-indigo-600">
-                Pricing Plan
-              </Link>
+              {showPricing && (
+                <Link to="/pricing" className="block text-slate-600 transition hover:text-indigo-600">
+                  Pricing Plan
+                </Link>
+              )}
             </div>
           </div>
         </div>

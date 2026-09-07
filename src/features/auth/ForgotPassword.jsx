@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Zap,
   Mail,
@@ -12,6 +12,7 @@ import {
 import { sendResetOtp, resetPassword } from "@/api/auth";
 
 export default function ForgotPassword() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
   const [email, setEmail] = useState("");
@@ -73,6 +74,10 @@ export default function ForgotPassword() {
         setPassword("");
         setConfirmPassword("");
         setStep(1);
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       }
     } catch {
       setError("Network error");

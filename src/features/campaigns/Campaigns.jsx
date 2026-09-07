@@ -74,6 +74,7 @@ import {
   platformIconMap,
 } from "@/lib/sourceDetection";
 import QrModal from "@/components/ui/QrModal";
+import PlanUpgradeModal from "@/components/PlanUpgradeModal";
 
 const COLORS = ["#4F46E5", "#F97316", "#22C55E", "#EAB308", "#EC4899"];
 
@@ -295,7 +296,7 @@ function RemoveFromCampaignConfirmationModal({ linkShort, campaignName, onConfir
  * `type` picks the copy: "campaign" when the campaign cap was hit, else links.
  * `expired` switches to win-back wording for a lapsed subscriber.
  */
-function LimitModal({ onClose, type = "link", expired = false }) {
+function LimitModal({ onClose, onUpgrade, type = "link", expired = false }) {
   const isCampaign = type === "campaign";
 
   return (
@@ -331,12 +332,13 @@ function LimitModal({ onClose, type = "link", expired = false }) {
               : `Free includes ${FREE_LINK_LIMIT} tracked link. Upgrade to Plus to create unlimited tracked links.`}
         </p>
         <div className="flex flex-col gap-2">
-          <Link
-            to="/pricing"
-            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors text-center"
+          <button
+            type="button"
+            onClick={onUpgrade}
+            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors text-center cursor-pointer"
           >
             {expired ? "Subscribe Again" : "View Plans"}
-          </Link>
+          </button>
           <button
             onClick={onClose}
             className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition-colors cursor-pointer"
@@ -419,6 +421,7 @@ export default function Campaigns() {
   const [removeLinkFromCampaignModal, setRemoveLinkFromCampaignModal] = useState(null); // { linkObj, campaignName }
   const [removingFromCampaign, setRemovingFromCampaign] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false);
   // Which cap was hit — drives the modal copy ("link" or "campaign").
   const [limitModalType, setLimitModalType] = useState("link");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -1153,8 +1156,13 @@ export default function Campaigns() {
           type={limitModalType}
           expired={subscriptionExpired}
           onClose={() => setShowLimitModal(false)}
+          onUpgrade={() => {
+            setShowLimitModal(false);
+            setShowPlanModal(true);
+          }}
         />
       )}
+      <PlanUpgradeModal open={showPlanModal} onClose={() => setShowPlanModal(false)} />
 
       <div className="flex min-h-screen">
         <Sidebar
@@ -1193,7 +1201,10 @@ export default function Campaigns() {
                   ? `Campaign: ${selectedCampaign}`
                   : "Campaigns Manager"}
               </h1>
-              <p className="text-slate-500 text-xs sm:text-sm mt-0.5 truncate">
+              {/* Hidden on phones/small tablets, where it only ever rendered as
+                  a meaningless one-line ellipsis. Shown from md up, where there
+                  is room for the full sentence on a single line. */}
+              <p className="hidden md:block text-slate-500 text-xs sm:text-sm mt-0.5 truncate">
                 {selectedCampaign
                   ? `Detailed analysis of marketing URLs tagged under "${selectedCampaign}"`
                   : "Track, compare, and manage aggregated performance of links grouped by UTM campaigns"}
