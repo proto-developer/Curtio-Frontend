@@ -716,12 +716,14 @@ export default function PreClick() {
                 sub="Created URLs"
               />
             </Link>
-            <StatCard
-              icon={<MousePointerClick size={18} className="text-orange-500" />}
-              label="Non-Redirected Clicks"
-              value={totalPreClicks.toLocaleString()}
-              sub="All time traffic"
-            />
+            <Link to="/dashboard/preclick" className="block">
+              <StatCard
+                icon={<MousePointerClick size={18} className="text-orange-500" />}
+                label="Non-Redirected Clicks"
+                value={totalPreClicks.toLocaleString()}
+                sub="All time traffic"
+              />
+            </Link>
             <Link to="/dashboard" state={{ filter: "Active" }} className="block">
               <StatCard
                 icon={<Activity size={18} className="text-green-500" />}

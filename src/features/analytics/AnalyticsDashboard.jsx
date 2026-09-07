@@ -736,12 +736,14 @@ export default function AnalyticsDashboard() {
               />
             </Link>
 
-            <StatCard
-              icon={<MousePointerClick size={18} className="text-orange-500" />}
-              label="Redirected Clicks"
-              value={totalClicks.toLocaleString()}
-              sub="All time traffic"
-            />
+            <Link to="/dashboard/analytics" className="block">
+              <StatCard
+                icon={<MousePointerClick size={18} className="text-orange-500" />}
+                label="Redirected Clicks"
+                value={totalClicks.toLocaleString()}
+                sub="All time traffic"
+              />
+            </Link>
             <Link to="/dashboard" state={{ filter: "Active" }} className="block">
               <StatCard
                 icon={<Activity size={18} className="text-green-500" />}

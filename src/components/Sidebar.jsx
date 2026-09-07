@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { isOwner } from "@/lib/auth/owner";
 import { isSubscriptionExpired } from "@/lib/auth/premium";
 import { getPlan } from "@/api/plan";
@@ -27,8 +27,13 @@ export default function Sidebar({
   subscriptionExpired = false,
 }) {
   const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname;
+
+  const navItemClass = ({ isActive }) =>
+    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs xl:text-sm transition-colors text-left ${
+      isActive
+        ? "bg-indigo-50 text-indigo-700 font-semibold"
+        : "font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+    }`;
 
   const getStoredUser = () => {
     const data =
@@ -86,7 +91,7 @@ export default function Sidebar({
   function handleLogout() {
     localStorage.removeItem("apiToken");
     localStorage.removeItem("LoginUser");
-    navigate("/login");
+    navigate("/login", { replace: true });
   }
 
   return (
@@ -130,49 +135,40 @@ export default function Sidebar({
         </div>
 
         <nav className="flex flex-col gap-1 flex-1 overflow-y-auto">
-          <Link
+          <NavLink
             to="/dashboard/analytics"
             onClick={() => setSidebarOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs xl:text-sm transition-colors text-left ${currentPath === "/dashboard/analytics"
-              ? "bg-indigo-50 text-indigo-700 font-semibold"
-              : "font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-              }`}
+            className={navItemClass}
           >
             <BarChart2 size={16} className="shrink-0" /> <span className="truncate">Redirected Clicks Dashboard</span>
-          </Link>
+          </NavLink>
 
-          {canViewPreClicks && <Link
-            to="/dashboard/preclick"
-            onClick={() => setSidebarOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs xl:text-sm transition-colors text-left ${currentPath === "/dashboard/preclick"
-              ? "bg-indigo-50 text-indigo-700 font-semibold"
-              : "font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-              }`}
-          >
-            <Activity size={16} className="shrink-0" /> <span className="truncate">Non-Redirected Clicks Dashboard</span>
-          </Link>}
+          {canViewPreClicks && (
+            <NavLink
+              to="/dashboard/preclick"
+              onClick={() => setSidebarOpen(false)}
+              className={navItemClass}
+            >
+              <Activity size={16} className="shrink-0" /> <span className="truncate">Non-Redirected Clicks Dashboard</span>
+            </NavLink>
+          )}
 
-          <Link
+          <NavLink
             to="/dashboard"
+            end
             onClick={() => setSidebarOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs xl:text-sm transition-colors text-left ${currentPath === "/dashboard"
-              ? "bg-indigo-50 text-indigo-700 font-semibold"
-              : "font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-              }`}
+            className={navItemClass}
           >
             <LinkIcon size={16} className="shrink-0" /> <span className="truncate">Links</span>
-          </Link>
+          </NavLink>
 
-          <Link
+          <NavLink
             to="/dashboard/campaigns"
             onClick={() => setSidebarOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs xl:text-sm transition-colors text-left ${currentPath === "/dashboard/campaigns"
-              ? "bg-indigo-50 text-indigo-700 font-semibold"
-              : "font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-              }`}
+            className={navItemClass}
           >
             <TrendingUp size={16} className="shrink-0" /> <span className="truncate">Campaigns</span>
-          </Link>
+          </NavLink>
         </nav>
 
         {/* Plan badge.
