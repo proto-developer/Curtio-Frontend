@@ -222,6 +222,9 @@ export default function ForgotPassword() {
                   <input
                     type="text"
                     required
+                    name="otp"
+                    autoComplete="one-time-code"
+                    inputMode="numeric"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="Enter OTP"
@@ -244,6 +247,8 @@ export default function ForgotPassword() {
                   <input
                     type={showPassword ? "text" : "password"}
                     required
+                    name="new-password"
+                    autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
@@ -280,6 +285,8 @@ export default function ForgotPassword() {
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     required
+                    name="confirm-password"
+                    autoComplete="new-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
