@@ -76,6 +76,8 @@ npm run test:e2e
 - **Unit tests** run on every PR/push to `main`/`prod` via [`.github/workflows/unit-tests.yml`](.github/workflows/unit-tests.yml).
 - **E2E tests** run alongside them via [`.github/workflows/e2e-tests.yml`](.github/workflows/e2e-tests.yml) — same triggers, separate job. On failure it uploads `playwright-report/` and `test-results/` (traces, screenshots, videos) as run artifacts, and annotates the failing lines on the PR.
 
+The e2e job copies `.env.example` and overrides just one value: `VITE_SANITY_PROJECT_ID`, read from the optional Actions secret of the same name (**Settings → Secrets and variables → Actions**), falling back to a dummy id (`ci000000`) when unset. Every backend/Sanity/socket call is mocked, so nothing else needs configuring.
+
 ## Project structure
 
 ```

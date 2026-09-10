@@ -34,10 +34,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The e2e suite mocks every backend call, but Vite still needs these at
-      # build time so requests are aimed at the origin the mocks match.
+      # .env.example already has the localhost API URLs the mocks expect. The
+      # only gap for e2e is VITE_SANITY_PROJECT_ID: the Sanity client throws on
+      # an empty id at import time (blanking /blog). The suite mocks every
+      # Sanity call, so the secret is optional — fall back to a dummy id.
       - name: Provide dev env vars
-        run: cp .env.example .env
+        env:
+          VITE_SANITY_PROJECT_ID: ${{ secrets.VITE_SANITY_PROJECT_ID }}
+        run: |
+          cp .env.example .env
+          sed -i "s|^VITE_SANITY_PROJECT_ID=.*|VITE_SANITY_PROJECT_ID=${VITE_SANITY_PROJECT_ID:-ci000000}|" .env
 
       - name: Resolve Playwright version
         id: playwright
