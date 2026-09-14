@@ -51,6 +51,33 @@ Run the backend separately (port **6090**) so `VITE_API_BASE_URL` resolves.
 | `npm run test:watch` | Vitest watch mode |
 | `npm run test:e2e` | Playwright e2e |
 
+## Testing
+
+| Suite | Command | Notes |
+|-------|---------|-------|
+| Unit (Vitest) | `npm test` | `src/**/*.test.{js,jsx}`, jsdom. `e2e/` is excluded. |
+| E2E (Playwright) | `npm run test:e2e` | Browser tests in `e2e/`, Chromium only. |
+
+### Running the e2e suite
+
+```bash
+cp .env.example .env            # once — Vite needs the VITE_* values
+npx playwright install chromium # once — download the browser
+npm run test:e2e
+```
+
+- **No backend required.** Every API/socket call is stubbed in [`e2e/fixtures.js`](e2e/fixtures.js); Playwright starts the Vite dev server itself.
+- `npm run test:e2e -- --headed` to watch it run (drops to 2 workers automatically), `--ui` for the Playwright UI, `--debug` to step through.
+- `npx playwright show-report` opens the last HTML report; failures also keep a trace (`npx playwright show-trace <file>`).
+- Shared personas, routes, and the mock backend live in `e2e/fixtures.js`; `e2e/global-setup.js` pre-warms routes so the dev server isn't cold when workers start.
+
+### CI
+
+- **Unit tests** run on every PR/push to `main`/`prod` via [`.github/workflows/unit-tests.yml`](.github/workflows/unit-tests.yml).
+- **E2E tests** run alongside them via [`.github/workflows/e2e-tests.yml`](.github/workflows/e2e-tests.yml) — same triggers, separate job. On failure it uploads `playwright-report/` and `test-results/` (traces, screenshots, videos) as run artifacts, and annotates the failing lines on the PR.
+
+The e2e job copies `.env.example` and overrides just one value: `VITE_SANITY_PROJECT_ID`, read from the optional Actions secret of the same name (**Settings → Secrets and variables → Actions**), falling back to a dummy id (`ci000000`) when unset. Every backend/Sanity/socket call is mocked, so nothing else needs configuring.
+
 ## Project structure
 
 ```
