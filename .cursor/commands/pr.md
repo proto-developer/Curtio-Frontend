@@ -16,7 +16,7 @@ When the user writes `/pr`, `pr`, `create a PR`, `open a PR`, or `commit and PR`
 | `prod` | Production (also the GitHub default branch) |
 | feature / ops branches | Short-lived work; never commit on `main` or `prod` |
 
-Day-to-day: `feature` → PR → **`main`**. Promoting to production is a **separate, explicit** step (PR into `prod`). Do **not** casually merge `main` → `prod` — history has diverged (rollbacks/restores); see `docs/RESTORE-PROD-HANDOFF.md` when restoring or promoting. `/pr` never opens or merges a PR into `prod` unless the user explicitly asks for a production PR.
+Day-to-day: `feature` → PR → **`main`**. Promoting to production is a **separate, explicit** step (PR into `prod` from a branch based on `prod`, merging or aligning with `main` as needed). `/pr` never opens or merges a PR into `prod` unless the user explicitly asks for a production PR.
 
 ## ClickUp sync (preferred, not blocking)
 
