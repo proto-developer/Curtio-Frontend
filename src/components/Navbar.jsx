@@ -39,7 +39,7 @@ export default function Navbar() {
   // the tab is just a dead end for them — hide it.
   const navItems = [
     { to: "/features", label: "Features" },
-    // { to: "/pricing", label: "Pricing" },
+    { to: "/pricing", label: "Pricing" },
     { to: "/accuracy", label: "Accuracy" },
     { to: "/blog", label: "Blog" },
   ].filter((item) => item.to !== "/pricing" || !isOwner());

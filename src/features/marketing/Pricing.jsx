@@ -7,57 +7,109 @@ import { isSubscriptionExpired } from "@/lib/auth/premium";
 import { isOwner } from "@/lib/auth/owner";
 
 /* ─────────────────────────────────────────────────────────────
-   DATA
+   PLAN CONTENT — single source of truth for this page.
+   Keep in sync with the published Pricing Plan copy; every other
+   surface that quotes a price or a limit should match this file.
 ───────────────────────────────────────────────────────────── */
+export const LAST_UPDATED = "August 28, 2026";
+export const LAST_UPDATED_ISO = "2026-08-28";
+
+const INTRO =
+  "Curtio provides URL shortening, link management, QR codes, and analytics tools for individuals, creators, marketers, and businesses.";
+
+const FREE_SUMMARY =
+  "Free includes 1 link per user. If you need more than 1 link, you must upgrade to a paid plan.";
+
+const FREE_FEATURES = [
+  "URL shortening",
+  "Dashboard to manage links and campaigns",
+  "QR code download (PNG)",
+  "Click analytics (time, country, device, and referrer)",
+  "Custom aliases",
+  "UTM tags (source, medium)",
+  "Link expiration",
+  "1 campaign: group your link under a shared UTM campaign so you can track it alongside other channels promoting the same destination",
+];
+
+const PLUS_PRICE = "$10/month, or $96/year when billed annually (20% off).";
+
+const PLUS_SUMMARY =
+  "Required if you need more than 1 link. Includes everything in Free, plus:";
+
+const PLUS_FEATURES = [
+  "Unlimited tracked links",
+  "Unlimited campaigns: group any number of links under as many shared UTM campaigns as you need, with combined click totals, active link counts, and channel breakdowns per campaign",
+  "Every Free feature (QR codes, click analytics, custom aliases, UTM tags, link expiration) applied across your full link library instead of a single link",
+];
+
+const PLUS_CTA = "Coming Soon";
+
+const CHECKOUT_NOTICE =
+  "Paid checkout is currently not available. Plus subscriptions will become available once online payment processing has been enabled.";
+
+const BILLING_POINTS = [
+  "When paid subscriptions become available, the applicable price, billing interval, and renewal terms will be shown before purchase.",
+  "Subscriptions may be canceled according to Curtio's subscription terms.",
+];
+
+const CONTACT_ROWS = [
+  { label: "Email", value: "support@curtio.io", href: "mailto:support@curtio.io" },
+  { label: "Company", value: "Proto IT Consultants" },
+  {
+    label: "Pakistan Office",
+    value: "Plot 35A Street 2, Jammu & Kashmir Housing Society G 15/1 G-15, Islamabad, 44150",
+  },
+  { label: "Phone", value: "+92 334 5868874", href: "tel:+923345868874" },
+];
+
+/* Comparison rows are derived strictly from the plan copy above. */
 const TABLE_ROWS = [
-  ["Price", "$0", "$0", "$9/mo ($7 annual)"],
-  ["Account needed", "No", "Yes", "Yes"],
-  ["Short links", "5 / day", "Unlimited*", "Unlimited*"],
-  ["Tracked links", "None", "1", "25"],
-  ["Accurate analytics", "None", "Full", "Full"],
-  ["QR codes", "Yes", "Yes", "Yes"],
-  ["Custom alias", "None", "Yes", "Yes"],
-  ["UTM builder", "None", "Yes", "Yes"],
-  ["Password and expiry", "None", "Yes", "Yes"],
-  ["Analytics history", "None", "Standard", "Extended"],
-  ["Bulk creation", "None", "None", "Yes"],
-  ["Custom branded domain", "None", "None", "Yes"],
-  ["API access", "None", "None", "Yes"],
-  ["Priority support", "None", "None", "Yes"],
+  ["Price", "$0", "$10/month ($96/year)"],
+  ["Tracked links", "1", "Unlimited"],
+  ["Campaigns", "1", "Unlimited"],
+  ["URL shortening", "Yes", "Yes"],
+  ["Dashboard to manage links and campaigns", "Yes", "Yes"],
+  ["QR code download (PNG)", "Yes", "Yes"],
+  ["Click analytics (time, country, device, and referrer)", "Yes", "Yes"],
+  ["Custom aliases", "Yes", "Yes"],
+  ["UTM tags (source, medium)", "Yes", "Yes"],
+  ["Link expiration", "Yes", "Yes"],
+  ["Combined click totals and channel breakdown per campaign", "Your 1 link", "Full link library"],
+  ["Available today", "Yes", "Coming soon"],
 ];
 
 const FAQ_ITEMS = [
   {
-    q: "Is the Free plan really free?",
-    a: "Yes, and it stays free. No credit card, no trial timer. You get one fully tracked link with complete, accurate analytics for as long as you want it.",
+    q: "What does the Free plan include?",
+    a: `${FREE_SUMMARY} It includes URL shortening, a dashboard to manage links and campaigns, QR code download (PNG), click analytics (time, country, device, and referrer), custom aliases, UTM tags (source, medium), link expiration, and 1 campaign.`,
   },
   {
-    q: "What is the difference between Free and Plus?",
-    a: "Free gives you one tracked link with all the standard features. Plus, at $9 a month, gives you 25 tracked links plus the premium tools: a custom branded domain, bulk creation, API access, longer analytics history, and priority support.",
+    q: "When do I need to upgrade?",
+    a: "Free includes 1 link per user. If you need more than 1 link, you must upgrade to a paid plan. Plus is the paid plan and it is required once you go past that single link.",
   },
   {
-    q: 'What does "accurate" actually mean?',
-    a: "We count each real visitor once, so a bot or a link preview will not inflate your numbers. That holds on Free and Plus alike.",
+    q: "How much does Plus cost?",
+    a: "Plus is $10/month, or $96/year when billed annually, which is 20% off the monthly price.",
   },
   {
-    q: "Can I cancel anytime?",
-    a: "Yes. Cancel whenever you like and you keep Plus until the end of your billing period, then you drop back to Free. Your links and your data stay intact.",
+    q: "Can I subscribe to Plus today?",
+    a: CHECKOUT_NOTICE,
   },
   {
-    q: "Is annual cheaper?",
-    a: "Yes. Annual billing works out to $7 a month, or $84 a year, which saves you 22% against monthly.",
+    q: "What is a campaign?",
+    a: "A campaign groups your link under a shared UTM campaign so you can track it alongside other channels promoting the same destination. Free includes 1 campaign. Plus includes unlimited campaigns, with combined click totals, active link counts, and channel breakdowns per campaign.",
   },
   {
-    q: "Will you put ads on my links?",
-    a: "No. Your redirect goes straight to the destination, and it is fast, on every plan including Free. We do not run ads on your links.",
+    q: "What changes about the features when I upgrade?",
+    a: "Nothing is taken away and nothing new has to be learned. Every Free feature (QR codes, click analytics, custom aliases, UTM tags, link expiration) applies across your full link library instead of a single link.",
   },
   {
-    q: "Do you sell my data?",
-    a: "No. We hash IP addresses and never store raw visitor data. Your data is yours.",
+    q: "How will billing work?",
+    a: `${BILLING_POINTS[0]} ${BILLING_POINTS[1]}`,
   },
   {
-    q: "How does curtio compare to Bitly or Cuttly on price?",
-    a: "Both lock real analytics behind paid tiers and have raised prices over the years. curtio gives you accurate analytics on the free tier, and Plus stays low at $9 a month, or $7 on annual billing.",
+    q: "Who do I contact about plans or billing?",
+    a: "For questions about Curtio plans or billing, contact support@curtio.io. Curtio is operated by Proto IT Consultants.",
   },
 ];
 
@@ -69,6 +121,7 @@ const CheckIcon = ({ className = "" }) => (
     className={`w-[18px] h-[18px] flex-none text-indigo-600 ${className}`}
     viewBox="0 0 24 24" fill="none" stroke="currentColor"
     strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
+    aria-hidden="true"
   >
     <path d="M20 6 9 17l-5-5" />
   </svg>
@@ -79,14 +132,9 @@ const XIcon = () => (
     className="w-[18px] h-[18px] flex-none text-slate-300"
     viewBox="0 0 24 24" fill="none" stroke="currentColor"
     strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+    aria-hidden="true"
   >
     <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-  </svg>
-);
-
-const StarIcon = () => (
-  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-    <path d="m12 2 2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.86-5-4.87 7.1-1.01z" />
   </svg>
 );
 
@@ -95,6 +143,7 @@ const ChevronIcon = ({ open }) => (
     className={`w-5 h-5 flex-none text-slate-400 transition-transform duration-200 ${open ? "rotate-180 text-indigo-600" : ""}`}
     viewBox="0 0 24 24" fill="none" stroke="currentColor"
     strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    aria-hidden="true"
   >
     <path d="m6 9 6 6 6-6" />
   </svg>
@@ -102,8 +151,22 @@ const ChevronIcon = ({ open }) => (
 
 /* Render a table cell value */
 function TableCell({ val, plus }) {
-  if (val === "Yes") return <div className="flex justify-center"><CheckIcon className={plus ? "text-indigo-600" : "text-indigo-500"} /></div>;
-  if (val === "None" || val === "No") return <div className="flex justify-center"><XIcon /></div>;
+  if (val === "Yes") {
+    return (
+      <div className="flex justify-center">
+        <span className="sr-only">Included</span>
+        <CheckIcon className={plus ? "text-indigo-600" : "text-indigo-500"} />
+      </div>
+    );
+  }
+  if (val === "None" || val === "No") {
+    return (
+      <div className="flex justify-center">
+        <span className="sr-only">Not included</span>
+        <XIcon />
+      </div>
+    );
+  }
   return <span className="text-[0.93rem] text-slate-700">{val}</span>;
 }
 
@@ -111,7 +174,6 @@ function TableCell({ val, plus }) {
    MAIN PAGE
 ───────────────────────────────────────────────────────────── */
 export default function Pricing() {
-  const [annual, setAnnual] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
 
   const apiToken = localStorage.getItem("apiToken");
@@ -302,8 +364,7 @@ export default function Pricing() {
               </article>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
         {/* ── COMPARISON ─────────────────────────────────────── */}
         <section className="py-14 sm:py-20 border-t border-slate-100">
@@ -398,75 +459,9 @@ export default function Pricing() {
                   .
                 </p>
               </div>
-              <p className="text-slate-500 text-[0.85rem] min-h-[20px]">No account</p>
-              <Link
-                to="/"
-                className="mt-6 w-full flex items-center justify-center px-5 py-3 rounded-[12px] border border-slate-200 text-slate-700 font-semibold text-[0.975rem] hover:border-slate-400 hover:bg-slate-50 transition-all"
-              >
-                Shorten a link
-              </Link>
-              <ul className="mt-6 border-t border-slate-100 pt-5 flex flex-col gap-3 flex-1">
-                {["5 short links per day", "Instant QR code on every link", "Fast, ad-free redirects", "No sign-up, no tracking"].map(f => (
-                  <li key={f} className="flex items-start gap-2.5 text-[0.92rem] text-slate-700 leading-[1.45]">
-                    <CheckIcon /><span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </article> */}
-
-            {/* Free */}
-            <article className="bg-white border border-slate-200 rounded-[16px] p-8 shadow-[0_1px_3px_rgba(0,0,0,.07)] flex flex-col transition-all hover:shadow-[0_16px_38px_-10px_rgba(15,23,42,.20)] hover:-translate-y-1">
-              <div className="font-bold text-[1.2rem] text-slate-900 tracking-[-0.01em]">Free</div>
-              <p className="text-slate-500 text-[0.92rem] mt-1.5 leading-[1.45] min-h-[40px]">For people who live by their numbers.</p>
-              <div className="flex items-baseline gap-1.5 mt-6 mb-1 flex-wrap">
-                <span className="text-[2.7rem] font-extrabold tracking-[-0.035em] text-slate-900 leading-none">$0</span>
-              </div>
-              <p className="text-slate-500 text-[0.85rem] min-h-[20px]">Free, and it stays free</p>
-              <Link
-                to="/register"
-                className="mt-6 w-full flex items-center justify-center px-5 py-3 rounded-[12px] border border-slate-200 text-slate-700 font-semibold text-[0.975rem] hover:border-slate-400 hover:bg-slate-50 transition-all"
-              >
-                Get started free
-              </Link>
-              <ul className="mt-6 border-t border-slate-100 pt-5 flex flex-col gap-3 flex-1">
-                <li className="text-[0.82rem] font-semibold text-slate-400 uppercase tracking-wide">Everything in Guest, plus:</li>
-                {["1 fully tracked link", "Accurate click analytics, counted once", "Clicks by time, device, country, and referrer", "Custom alias", "UTM builder", "Password protection and link expiration", "QR code downloads", "No credit card"].map(f => (
-                  <li key={f} className="flex items-start gap-2.5 text-[0.92rem] text-slate-700 leading-[1.45]">
-                    <CheckIcon /><span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-
-            {/* Plus — featured */}
-            <article className="relative bg-white border-2 border-indigo-500 rounded-[16px] p-8 pt-10 shadow-[0_24px_60px_-18px_rgba(79,70,229,0.4)] flex flex-col transition-all hover:shadow-[0_32px_70px_-18px_rgba(79,70,229,0.45)] hover:-translate-y-1">
-              {/* Most popular badge */}
-              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 whitespace-nowrap bg-indigo-600 text-white text-[0.75rem] font-bold tracking-[0.02em] px-4 py-[7px] rounded-full shadow-[0_10px_22px_-6px_rgba(79,70,229,0.6)]">
-                <StarIcon /> Most popular
-              </span>
-              <div className="font-bold text-[1.2rem] text-slate-900 tracking-[-0.01em]">Plus</div>
-              <p className="text-slate-500 text-[0.92rem] mt-1.5 leading-[1.45] min-h-[40px]">For creators and marketers running real campaigns.</p>
-              <div className="flex items-baseline gap-1.5 mt-6 mb-1 flex-wrap">
-                <span className="text-[2.7rem] font-extrabold tracking-[-0.035em] text-slate-900 leading-none">{plusPrice}</span>
-                <span className="text-slate-500 font-semibold text-[1rem]">/mo</span>
-              </div>
-              <p className="text-slate-500 text-[0.85rem] min-h-[20px]">{plusNote}</p>
-              <Link
-                to="/register"
-                className="mt-6 w-full flex items-center justify-center px-5 py-3 rounded-[12px] bg-indigo-600 text-white font-semibold text-[0.975rem] hover:bg-indigo-700 hover:-translate-y-px transition-all shadow-[0_1px_3px_rgba(0,0,0,.07)]"
-              >
-                Upgrade to Plus
-              </Link>
-              <ul className="mt-6 border-t border-slate-100 pt-5 flex flex-col gap-3 flex-1">
-                <li className="text-[0.82rem] font-semibold text-slate-400 uppercase tracking-wide">Everything in Free, plus:</li>
-                {["25 tracked links", "Longer analytics history", "Bulk link creation", "Custom branded domain", "API access", "Priority support"].map(f => (
-                  <li key={f} className="flex items-start gap-2.5 text-[0.92rem] text-slate-700 leading-[1.45]">
-                    <CheckIcon /><span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
+            </div>
           </div>
+        </section>
 
         {/* ── FAQ ────────────────────────────────────────────── */}
         <section className="py-14 sm:py-20 border-t border-slate-100">
@@ -538,19 +533,10 @@ export default function Pricing() {
                     )}
                   </dd>
                 </div>
-              );
-            })}
+              ))}
+            </dl>
           </div>
-        </div>
-      </section>
-
-      {/* ── CTA ──────────────────────────────────────────────── */}
-      <CTASection
-        heading="Start free. Pay only when you need more."
-        description="Make a free account in 30 seconds. One fully tracked link with complete analytics, forever free."
-        buttonText="Get started free"
-        buttonLink="/register"
-      />
+        </section>
       </main>
 
       <Footer />

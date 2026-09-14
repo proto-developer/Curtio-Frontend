@@ -80,7 +80,12 @@ function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/features" element={<Features />} />
         <Route path="/accuracy" element={<Accuracy />} />
-        {/* <Route path="/pricing" element={<Pricing />} /> */}
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/password/:shortCode" element={<PasswordProtected />} />
 
         {/* ── Authenticated App Shell with Single Socket Connection ── */}
         <Route

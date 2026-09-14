@@ -67,7 +67,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 function DeleteModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -147,7 +147,6 @@ export default function AnalyticsDashboard() {
   const userName = storedUser.name || "User";
   const userEmail = storedUser.email || "";
   const userInitial = userName.charAt(0).toUpperCase();
-  const canViewPreClicks = isOwner();
 
   function handleLogout() {
     localStorage.removeItem("apiToken");
@@ -157,10 +156,12 @@ export default function AnalyticsDashboard() {
 
   const token = localStorage.getItem("apiToken");
 
-  // const isPremium = PREMIUM_USERS.includes(userEmail);
-  // const FREE_LIMIT = isPremium ? Infinity : 1;
-  const isPremium = true;
-  const FREE_LIMIT = Infinity;
+  // Paid plan = a document in the subscriptions collection. Seeded from the JWT
+  // claim, then replaced by the live value GET /urls returns.
+  const [isPremium, setIsPremium] = useState(() => hasUnlimitedLinks());
+  const [subscriptionStatus, setSubscriptionStatus] = useState("none");
+  const subscriptionExpired = isSubscriptionExpired(subscriptionStatus);
+  const FREE_LIMIT = linkLimitFor(isPremium);
 
   // Helper function to format date as YYYY-MM-DD
   const formatDateToString = (date) => {
@@ -302,6 +303,12 @@ export default function AnalyticsDashboard() {
       const data = await listUrls();
       if (!data) return;
       if (data.success) {
+        if (typeof data.unlimitedLinks === "boolean") {
+          setIsPremium(data.unlimitedLinks);
+        }
+        if (typeof data.subscriptionStatus === "string") {
+          setSubscriptionStatus(data.subscriptionStatus);
+        }
         const sortedUrls = [...(data.urls || [])].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setRawUrls(sortedUrls);
         if (data.labels) {
@@ -434,8 +441,9 @@ export default function AnalyticsDashboard() {
   });
 
   const totalUrls = links.length;
-  const totalClicks = allFilteredLogs.length;
-  const totalPreClicks = links.reduce((sum, l) => sum + (l.preClicks || 0), 0);
+  // Exact stored counter, same as Dashboard.jsx. This page reports redirected
+  // clicks only — non-redirected clicks live on /dashboard/preclick.
+  const totalClicks = links.reduce((sum, l) => sum + (l.clicks || 0), 0);
   const activeLinks = links.filter((l) => l.active).length;
   const inactiveLinks = totalUrls - activeLinks;
 
@@ -622,6 +630,7 @@ export default function AnalyticsDashboard() {
           linksCount={links.length}
           FREE_LIMIT={FREE_LIMIT}
           isPremium={isPremium}
+          subscriptionExpired={subscriptionExpired}
         />
 
         {/* ── Main Content Area ── */}

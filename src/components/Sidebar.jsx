@@ -20,8 +20,11 @@ export default function Sidebar({
   sidebarOpen,
   setSidebarOpen,
   linksCount,
-  FREE_LIMIT = 100,
+  FREE_LIMIT = 1,
   isPremium = false,
+  // True once a subscription has lapsed — swaps the free-plan meter for a
+  // "buy again" prompt. Records are never deleted, so this stays accurate.
+  subscriptionExpired = false,
 }) {
   const navigate = useNavigate();
 
@@ -168,11 +171,25 @@ export default function Sidebar({
           </NavLink>
         </nav>
 
-        {/* Free plan badge */}
-        {linksCount !== undefined && !isPremium && (
-          <div className="border border-indigo-100 bg-indigo-50 rounded-xl p-4 my-3">
-            <div className="text-xs font-bold text-indigo-700 mb-1">
-              Free Plan
+        {/* Plan badge.
+            - Admins (owners) never see plan info at all: they run the tool and
+              are unlimited without paying.
+            - A lapsed subscriber sees "Plus Plan Expired", not "Free Plan" —
+              calling them Free hides that they used to pay and gives them
+              nothing to act on.
+            - Everyone else sees the free-plan meter. */}
+        {plan && linksCount !== undefined && !isAdmin && (
+          plan.unlimitedLinks ? (
+            <div className="border border-indigo-100 bg-indigo-50 rounded-xl p-4 my-3">
+              <div className="text-xs font-bold text-indigo-700 mb-1">
+                Plus Plan
+              </div>
+              <div className="text-xs text-slate-500">
+                {usedLinks}/Unlimited links used
+              </div>
+              <div className="text-xs text-slate-500 mt-0.5">
+                {usedCampaigns}/Unlimited campaigns used
+              </div>
             </div>
           ) : isSubscriptionExpired(plan.subscriptionStatus) ? (
             <div className="border border-amber-200 bg-amber-50 rounded-xl p-4 my-3">
@@ -227,7 +244,7 @@ export default function Sidebar({
                 </button>
               )}
             </div>
-          </div>
+          )
         )}
 
         <div className="border-t border-slate-200 pt-3 mt-auto">
@@ -236,8 +253,16 @@ export default function Sidebar({
               {userInitial}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-xs sm:text-sm font-semibold text-slate-800 truncate">
-                {userName}
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="text-xs sm:text-sm font-semibold text-slate-800 truncate">
+                  {userName}
+                </span>
+                {/* Owners get an Admin marker here instead of a plan card. */}
+                {isAdmin && (
+                  <span className="shrink-0 inline-flex items-center rounded-full bg-indigo-50 border border-indigo-100 px-2 py-[1px] text-[10px] font-bold uppercase tracking-wide text-indigo-700">
+                    Admin
+                  </span>
+                )}
               </div>
               <div className="text-[11px] sm:text-xs text-slate-400 truncate">
                 {userEmail}

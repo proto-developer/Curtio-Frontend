@@ -122,7 +122,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 function DeleteModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -187,7 +187,7 @@ function DeleteModal({ onConfirm, onCancel, deleting }) {
 function DeleteCampaignModal({ campaignName, linksCount, onConfirm, onCancel, deleting }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-800 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !deleting && onCancel()}
     >
       <div
@@ -251,7 +251,7 @@ function DeleteCampaignModal({ campaignName, linksCount, onConfirm, onCancel, de
 function RemoveFromCampaignConfirmationModal({ linkShort, campaignName, onConfirm, onCancel, processing }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={() => !processing && onCancel()}
     >
       <div
@@ -301,7 +301,7 @@ function LimitModal({ onClose, onUpgrade, type = "link", expired = false }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
@@ -309,13 +309,27 @@ function LimitModal({ onClose, onUpgrade, type = "link", expired = false }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Zap size={22} className="text-indigo-600" fill="currentColor" />
+          {isCampaign ? (
+            <TrendingUp size={22} className="text-indigo-600" />
+          ) : (
+            <Zap size={22} className="text-indigo-600" fill="currentColor" />
+          )}
         </div>
         <h3 className="font-extrabold text-slate-900 text-lg mb-1">
-          Plan Limit Reached
+          {expired
+            ? "Plus Plan Expired"
+            : isCampaign
+              ? "Campaign Limit Reached"
+              : "Link Limit Reached"}
         </h3>
         <p className="text-slate-500 text-sm mb-6">
-          You have reached the maximum number of active links for your current plan. Please upgrade to create more tracked links.
+          {expired
+            ? isCampaign
+              ? `Your Plus plan has expired, so you are back to ${FREE_CAMPAIGN_LIMIT} campaign and ${FREE_LINK_LIMIT} tracked link. Subscribe again to create more campaigns.`
+              : `Your Plus plan has expired, so you are back to ${FREE_LINK_LIMIT} tracked link. Subscribe again to create more links.`
+            : isCampaign
+              ? `Free includes ${FREE_CAMPAIGN_LIMIT} campaign and ${FREE_LINK_LIMIT} tracked link, and a new campaign needs a link. Upgrade to Plus for unlimited campaigns and links.`
+              : `Free includes ${FREE_LINK_LIMIT} tracked link. Upgrade to Plus to create unlimited tracked links.`}
         </p>
         <div className="flex flex-col gap-2">
           <button
@@ -364,10 +378,12 @@ export default function Campaigns() {
 
   const token = localStorage.getItem("apiToken");
 
-  // const isPremium = PREMIUM_USERS.includes(userEmail);
-  // const FREE_LIMIT = isPremium ? Infinity : 1;
-  const isPremium = true;
-  const FREE_LIMIT = Infinity;
+  // Paid plan = a document in the subscriptions collection. Seeded from the JWT
+  // claim, then replaced by the live value GET /urls returns.
+  const [isPremium, setIsPremium] = useState(() => hasUnlimitedLinks());
+  const [subscriptionStatus, setSubscriptionStatus] = useState("none");
+  const subscriptionExpired = isSubscriptionExpired(subscriptionStatus);
+  const FREE_LIMIT = linkLimitFor(isPremium);
 
   // Helper function to format date as YYYY-MM-DD
   const formatDateToString = (date) => {
@@ -540,6 +556,12 @@ export default function Campaigns() {
       const data = await listUrls();
       if (!data) return;
       if (data.success) {
+        if (typeof data.unlimitedLinks === "boolean") {
+          setIsPremium(data.unlimitedLinks);
+        }
+        if (typeof data.subscriptionStatus === "string") {
+          setSubscriptionStatus(data.subscriptionStatus);
+        }
         if (data.labels) {
           setAccountLabels(data.labels);
         }
@@ -631,6 +653,11 @@ export default function Campaigns() {
   const campaignsMap = {};
   const campaignSourceMap = {};
   const campaignMediumMap = {};
+  // Links belonging to at least one campaign — by utm_campaign in the
+  // destination URL OR by the campaigns array ("Add to Campaign"). The Tagged
+  // URLs card must use this same rule as the grouping below, not the URL param
+  // alone, or a link added through the modal is grouped but never counted.
+  const campaignLinkIds = new Set();
   links.forEach((link) => {
     const linkCampaigns = new Map(); // name -> { source, medium }
     const urlCampaign = getCampaignParam(link.original);
@@ -660,17 +687,15 @@ export default function Campaigns() {
         campaignsMap[name] = { name, links: [], clicks: 0, preClicks: 0, activeCount: 0 };
       }
       campaignsMap[name].links.push(link);
+      campaignLinkIds.add(link.id);
       // Store source and medium for this link-campaign pair
       campaignSourceMap[`${link.id}::${name}`] = details.source;
       campaignMediumMap[`${link.id}::${name}`] = details.medium;
-      const linkFilteredCount = (link.clickLogs || []).filter(
-        logMatchesFilters,
-      ).length;
-      const linkFilteredPreCount = (link.preClickLogs || []).filter(
-        logMatchesFilters,
-      ).length;
-      campaignsMap[name].clicks += linkFilteredCount;
-      campaignsMap[name].preClicks += linkFilteredPreCount;
+      // Campaign totals use the stored counters, same as Dashboard.jsx. Summing
+      // the date-filtered logs instead made a campaign report fewer clicks than
+      // the link it contains, because the default range only covers 7 days.
+      campaignsMap[name].clicks += link.clicks || 0;
+      campaignsMap[name].preClicks += link.preClicks || 0;
       if (link.active) campaignsMap[name].activeCount += 1;
     });
   });
@@ -679,6 +704,9 @@ export default function Campaigns() {
     (a, b) => b.clicks - a.clicks,
   );
   const totalCampaigns = campaignsList.length;
+  // Campaign quota is separate from the link quota: Free holds 1 of each.
+  const CAMPAIGN_LIMIT = campaignLimitFor(isPremium);
+  const atCampaignLimit = !isPremium && totalCampaigns >= CAMPAIGN_LIMIT;
   const totalCampaignClicks = campaignsList.reduce(
     (sum, c) => sum + c.clicks,
     0,
@@ -1065,6 +1093,13 @@ export default function Campaigns() {
           if (!selectedCampaign) {
             setSelectedCampaign(activeCampaign.trim());
           }
+        } else if (data.planLimitReached) {
+          // The server refused on quota. On this page the user was creating a
+          // campaign, so show the campaign modal rather than the API's
+          // link-worded message.
+          setShowCreateForm(false);
+          setLimitModalType(selectedCampaign ? "link" : "campaign");
+          setShowLimitModal(true);
         } else {
           setError(data.message || "Failed to create short URL.");
         }
@@ -1136,6 +1171,7 @@ export default function Campaigns() {
           linksCount={links.length}
           FREE_LIMIT={FREE_LIMIT}
           isPremium={isPremium}
+          subscriptionExpired={subscriptionExpired}
         />
 
         {/* ── Main Content ── */}
@@ -1180,11 +1216,27 @@ export default function Campaigns() {
           <div className="flex flex-wrap items-center justify-end gap-2 -mt-1 lg:-mt-3">
               <button
                 onClick={() => {
-                  if (atLimit) {
+                  // Same button is "New Link" inside a campaign and
+                  // "New Campaign" outside one — check the matching quota so
+                  // the modal explains the right limit.
+                  if (selectedCampaign) {
+                    if (atLimit) {
+                      setLimitModalType("link");
+                      setShowLimitModal(true);
+                      return;
+                    }
+                  } else if (atCampaignLimit) {
+                    // Only the CAMPAIGN cap blocks opening this form. The link
+                    // cap must not: a campaign can be built from an existing
+                    // link (a PATCH, no new link), so a Free user with their 1
+                    // link and no campaigns can still create their 1 campaign.
+                    // If they pick "new link" while at the link cap, the server
+                    // says so and the submit handler shows the link modal.
+                    setLimitModalType("campaign");
                     setShowLimitModal(true);
-                  } else {
-                    setShowCreateForm(!showCreateForm);
+                    return;
                   }
+                  setShowCreateForm(!showCreateForm);
                 }}
                 className="flex items-center gap-1.5 sm:gap-2 font-semibold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-colors shadow-sm bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 cursor-pointer"
               >
@@ -1579,9 +1631,7 @@ export default function Campaigns() {
                 <StatCard
                   icon={<FolderOpen size={18} className="text-green-500" />}
                   label="Tagged URLs"
-                  value={links
-                    .filter((l) => getCampaignParam(l.original))
-                    .length.toLocaleString()}
+                  value={campaignLinkIds.size.toLocaleString()}
                   sub={`Out of ${links.length} total links`}
                 />
               </div>
