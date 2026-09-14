@@ -1,6 +1,6 @@
 /**
  * Shared source/browser detection logic and icon mapping.
- * Single source of truth — imported by AnalytcsDashboard, Analytics, PreClick, and Campaigns.
+ * Single source of truth — imported by AnalyticsDashboard, Analytics, PreClick, and Campaigns.
  */
 
 import {

@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import env from "../../Config/env";
+import env from "@/config/env";
 
 /**
  * Singleton Socket.IO client factory.

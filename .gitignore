@@ -7,15 +7,35 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build
 dist
 dist-ssr
 *.local
-*.env
-src/.env
 
+# Env — keep a committed template if you add .env.example
+.env
+.env.*
+!.env.example
 
-# Editor directories and files
+# Tests / Playwright
+/coverage
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/test-results/
+
+# Caches
+.eslintcache
+.vite
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Editor / OS
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -25,3 +45,6 @@ src/.env
 *.njsproj
 *.sln
 *.sw?
+
+# Local agent tooling
+.claude/
