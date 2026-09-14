@@ -1,30 +1,56 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, routes, loginSuccessFor } from './fixtures';
 
-test.describe('Authentication E2E Flow', () => {
-  test('should render login page and permit typing into input fields', async ({ page }) => {
-    await page.goto('http://localhost:5173/login');
+test.describe('Authentication', () => {
+  test('login page renders and accepts input', async ({ page, app }) => {
+    await app.goto(routes.login);
 
-    // Check page elements
     await expect(page.getByRole('heading', { name: /welcome back/i })).toBeVisible();
 
-    const emailInput = page.getByPlaceholder('you@example.com');
-    const passwordInput = page.getByPlaceholder('••••••••');
+    const email = page.getByPlaceholder('you@example.com');
+    const password = page.getByPlaceholder('••••••••');
 
-    await emailInput.fill('e2euser@example.com');
-    await passwordInput.fill('Password123!');
+    await email.fill('e2euser@example.com');
+    await password.fill('Password123!');
 
-    await expect(emailInput).toHaveValue('e2euser@example.com');
-    await expect(passwordInput).toHaveValue('Password123!');
+    await expect(email).toHaveValue('e2euser@example.com');
+    await expect(password).toHaveValue('Password123!');
   });
 
-  test('should navigate between Login and Register pages', async ({ page }) => {
-    await page.goto('http://localhost:5173/login');
+  test('wrong credentials keep the user on /login and show the error banner', async ({ page, app }) => {
+    app.api.loginResult = { success: false, message: 'Invalid email or password.' };
 
-    // Click register / sign up link if present
-    const signUpLink = page.getByRole('link', { name: /sign up/i });
-    if (await signUpLink.isVisible()) {
-      await signUpLink.click();
-      await expect(page).toHaveURL(/.*register/);
-    }
+    await app.goto(routes.login);
+    await page.getByPlaceholder('you@example.com').fill('nobody@curtio.test');
+    await page.getByPlaceholder('••••••••').fill('wrong-password');
+    await page.getByRole('button', { name: /sign in/i }).click();
+
+    await expect(page.getByText('Invalid email or password.')).toBeVisible();
+    await expect(page).toHaveURL(/\/login$/);
+  });
+
+  test('a successful sign-in lands the user on their links dashboard', async ({ page, app }) => {
+    app.api.loginResult = loginSuccessFor('freeUser');
+
+    await app.goto(routes.login);
+    await page.getByPlaceholder('you@example.com').fill('free@curtio.test');
+    await page.getByPlaceholder('••••••••').fill('correct-horse');
+    await page.getByRole('button', { name: /sign in/i }).click();
+
+    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page.getByRole('heading', { name: 'My Links' })).toBeVisible();
+    // The session the app persisted is what protects the route on reload.
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem('apiToken')))
+      .not.toBeNull();
+  });
+
+  test('the Login page links across to a usable Register page', async ({ page, app }) => {
+    await app.goto(routes.login);
+
+    await page.getByRole('link', { name: /sign up free/i }).click();
+
+    await expect(page).toHaveURL(/\/register$/);
+    await expect(page.getByRole('heading', { name: /create your account/i })).toBeVisible();
+    await expect(page.getByPlaceholder('Jane Smith')).toBeVisible();
   });
 });

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Search, Plus, ArrowLeft, Trash2, Check, Zap, MousePointerClick, Palette } from "lucide-react";
-import env from "../../Config/env";
+import { updateUrlLabels } from "@/api/urls";
+import { updateAccountLabels } from "@/api/auth";
 
 export default function LabelCell({ link, accountLabels = {}, onLabelsChanged, readOnly = false }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +20,6 @@ export default function LabelCell({ link, accountLabels = {}, onLabelsChanged, r
   const [updating, setUpdating] = useState(false);
 
   const token = localStorage.getItem("apiToken");
-  const baseUrl = env.BACKEND_URL;
 
   // Selected labels on this specific link
   const selectedLabelKeys = link?.labels || [];
@@ -37,15 +37,7 @@ export default function LabelCell({ link, accountLabels = {}, onLabelsChanged, r
     }
 
     try {
-      const res = await fetch(`${baseUrl}/urls/${link.slug}/labels`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ labels: newKeys })
-      });
-      const data = await res.json();
+      const data = await updateUrlLabels(link.slug, newKeys, { token });
       if (data.success) {
         if (onLabelsChanged) onLabelsChanged();
       }
@@ -98,15 +90,7 @@ export default function LabelCell({ link, accountLabels = {}, onLabelsChanged, r
     setUpdating(true);
 
     try {
-      const res = await fetch(`${baseUrl}/auth/labels`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ labels: draftAccountLabels })
-      });
-      const data = await res.json();
+      const data = await updateAccountLabels(draftAccountLabels, { token });
       if (data.success) {
         setHasUnsavedChanges(false);
         if (onLabelsChanged) onLabelsChanged();

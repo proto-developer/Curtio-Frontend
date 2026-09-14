@@ -1,23 +1,40 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom";
-import { useEffect } from "react";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Analytics from "./pages/Analytics";
-import AnalytcsDashboard from "./pages/AnalytcsDashboard";
-import Campaigns from "./pages/Campaigns";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Profile from "./pages/Profile";
-import ForgotPassword from "./pages/Fpassword";
-import Accuracy from "./pages/Accuracy";
-import Features from "./pages/feature";
-import PreClick from "./pages/PreClick";
 import OwnerRoute from "./components/OwnerRoute";
-import SocketProvider from "./socket/SocketProvider";
 import { RouteSeo } from "./components/Seo";
+
+const Landing = lazy(() => import("./features/marketing/Landing"));
+const Login = lazy(() => import("./features/auth/Login"));
+const Register = lazy(() => import("./features/auth/Register"));
+const Dashboard = lazy(() => import("./features/links/Dashboard"));
+const Analytics = lazy(() => import("./features/analytics/Analytics"));
+const AnalyticsDashboard = lazy(() => import("./features/analytics/AnalyticsDashboard"));
+const Campaigns = lazy(() => import("./features/campaigns/Campaigns"));
+const Blog = lazy(() => import("./features/blog/Blog"));
+const BlogPost = lazy(() => import("./features/blog/BlogPost"));
+const Profile = lazy(() => import("./features/links/Profile"));
+const ForgotPassword = lazy(() => import("./features/auth/ForgotPassword"));
+const Accuracy = lazy(() => import("./features/marketing/Accuracy"));
+const Features = lazy(() => import("./features/marketing/Features"));
+const Pricing = lazy(() => import("./features/marketing/Pricing"));
+const TermsOfService = lazy(() => import("./features/marketing/TermsOfService"));
+const PrivacyPolicy = lazy(() => import("./features/marketing/PrivacyPolicy"));
+const RefundPolicy = lazy(() => import("./features/marketing/RefundPolicy"));
+const ShippingPolicy = lazy(() => import("./features/marketing/ShippingPolicy"));
+const PasswordProtected = lazy(() => import("./features/public/PasswordProtected"));
+const PreClick = lazy(() => import("./features/analytics/PreClick"));
+const SocketProvider = lazy(() => import("./socket/SocketProvider"));
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen bg-slate-50" aria-busy="true">
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
+      </div>
+    </div>
+  );
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -33,11 +50,29 @@ function ScrollToTop() {
   return null;
 }
 
-export default function App() {
+function AuthenticatedShell() {
   return (
-    <BrowserRouter>
-      <RouteSeo />
-      <ScrollToTop />
+    <SocketProvider>
+      <Outlet />
+    </SocketProvider>
+  );
+}
+
+function AppRoutes() {
+  const { pathname } = useLocation();
+  const [displayPath, setDisplayPath] = useState(pathname);
+  const isTransitioning = displayPath !== pathname;
+
+  useLayoutEffect(() => {
+    setDisplayPath(pathname);
+  }, [pathname]);
+
+  if (isTransitioning) {
+    return <RouteFallback />;
+  }
+
+  return (
+    <Suspense key={pathname} fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -51,15 +86,13 @@ export default function App() {
         <Route
           element={
             <ProtectedRoute>
-              <SocketProvider>
-                <Outlet />
-              </SocketProvider>
+              <AuthenticatedShell />
             </ProtectedRoute>
           }
         >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/editprofile" element={<Profile />} />
-          <Route path="/dashboard/analytics" element={<AnalytcsDashboard />} />
+          <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
           <Route
             path="/dashboard/preclick"
             element={
@@ -77,6 +110,16 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+    </Suspense>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <RouteSeo />
+      <ScrollToTop />
+      <AppRoutes />
     </BrowserRouter>
   );
 }
